@@ -78,14 +78,18 @@ const CustomerAccountPage: React.FC = () => {
     try {
       const res = await apiClient.get('/ecommerce/orders');
       setOrders(res.data.orders || res.data || []);
-    } catch { /* empty */ }
+    } catch (e: any) {
+      console.error('[CustomerAccount] Orders fetch failed:', e?.response?.data?.error || e?.message);
+    }
   }, []);
 
   const fetchWishlist = useCallback(async () => {
     try {
       const res = await apiClient.get('/store-features/wishlist');
       setWishlist(res.data.items || res.data || []);
-    } catch { /* empty */ }
+    } catch (e: any) {
+      console.error('[CustomerAccount] Wishlist fetch failed:', e?.response?.data?.error || e?.message);
+    }
   }, []);
 
   const fetchLoyalty = useCallback(async () => {
@@ -96,7 +100,9 @@ const CustomerAccountPage: React.FC = () => {
         const pointsRes = await apiClient.get(`/loyalty/points/${userId}`);
         setLoyalty(pointsRes.data);
       }
-    } catch { /* empty */ }
+    } catch (e: any) {
+      console.error('[CustomerAccount] Loyalty points fetch failed:', e?.response?.data?.error || e?.message);
+    }
   }, []);
 
   const fetchProfile = useCallback(async () => {
@@ -104,7 +110,9 @@ const CustomerAccountPage: React.FC = () => {
       const res = await apiClient.get('/auth/me');
       const u = res.data.user || res.data;
       setProfile({ name: u.name || '', email: u.email || '', phone: u.phone || '', address: u.address || '' });
-    } catch { /* empty */ }
+    } catch (e: any) {
+      console.error('[CustomerAccount] Profile fetch failed:', e?.response?.data?.error || e?.message);
+    }
   }, []);
 
   useEffect(() => {
@@ -120,7 +128,9 @@ const CustomerAccountPage: React.FC = () => {
     try {
       await apiClient.delete(`/store-features/wishlist/${productId}`);
       setWishlist((prev) => prev.filter((w) => w.productId !== productId));
-    } catch { /* empty */ }
+    } catch (e: any) {
+      console.error('[CustomerAccount] Wishlist remove failed:', e?.response?.data?.error || e?.message);
+    }
   };
 
   return (

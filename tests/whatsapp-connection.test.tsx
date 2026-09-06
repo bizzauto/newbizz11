@@ -1,8 +1,8 @@
-/**
+﻿/**
  * @jest-environment jsdom
  *
  * Tests for WhatsAppModule connection status transitions:
- *   disconnected → scanning → connecting → connected
+ *   disconnected â†’ scanning â†’ connecting â†’ connected
  *
  * Note: After successful connection, the component auto-switches
  * currentView back to 'chats'. To see the connected UI screen
@@ -59,7 +59,7 @@ describe('WhatsAppModule - Connection Status Transitions', () => {
     (whatsappAPI.getAutoReplies as jest.Mock).mockResolvedValue({ data: { success: true, data: [] } });
     (whatsappAPI.getConversations as jest.Mock).mockResolvedValue({ data: { success: true, data: { conversations: [] } } });
 
-    // Mock whatsappAPI.connect() for Meta OAuth flow — returns signupUrl
+    // Mock whatsappAPI.connect() for Meta OAuth flow â€” returns signupUrl
     (whatsappAPI.connect as jest.Mock).mockResolvedValue({ data: { signupUrl: 'https://oauth.example.com/connect' } });
 
     // apiClient.get returns empty data (no Evolution API pre-configured)
@@ -73,7 +73,7 @@ describe('WhatsAppModule - Connection Status Transitions', () => {
     (apiClient.post as jest.Mock).mockResolvedValue({ data: { success: true, data: {} } });
   });
 
-  // ── Initial state ──
+  // â”€â”€ Initial state â”€â”€
 
   it('starts with disconnected status indicator', async () => {
     renderWithRouter(<WhatsAppModule />);
@@ -91,7 +91,7 @@ describe('WhatsAppModule - Connection Status Transitions', () => {
     });
   });
 
-  // ── Navigate to Connection view ──
+  // â”€â”€ Navigate to Connection view â”€â”€
 
   it('navigates to QR connect view when Connection tab is clicked', async () => {
     renderWithRouter(<WhatsAppModule />);
@@ -110,7 +110,7 @@ describe('WhatsAppModule - Connection Status Transitions', () => {
     ).toBeInTheDocument();
   });
 
-  // ── disconnected ──
+  // â”€â”€ disconnected â”€â”€
 
   it('shows Simulate Scan & Connect button when disconnected', async () => {
     renderWithRouter(<WhatsAppModule />);
@@ -120,7 +120,7 @@ describe('WhatsAppModule - Connection Status Transitions', () => {
   });
 
   it('shows error when connection API fails', async () => {
-    // Override connect mock to reject — simulates API failure
+    // Override connect mock to reject â€” simulates API failure
     (whatsappAPI.connect as jest.Mock).mockRejectedValue(new Error('Connection failed'));
 
     renderWithRouter(<WhatsAppModule />);
@@ -144,7 +144,7 @@ describe('WhatsAppModule - Connection Status Transitions', () => {
     fireEvent.click(chatsNavButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/BizzAuto Solutions WhatsApp/i)).toBeInTheDocument();
+      expect(screen.getByText(/— Business Chat/i)).toBeInTheDocument();
     });
   });
 
@@ -321,7 +321,7 @@ describe('WhatsAppModule - Evolution API Mode', () => {
       expect(screen.getByText('Connect & Get QR Code')).toBeInTheDocument();
     });
 
-    // Click Connect — triggers handleEvolutionConnect → apiClient.post('/evolution/connect', ...)
+    // Click Connect â€” triggers handleEvolutionConnect â†’ apiClient.post('/evolution/connect', ...)
     fireEvent.click(screen.getByText('Connect & Get QR Code'));
 
     // After the async call resolves, connectionStatus becomes 'scanning'     // Verify the component shows scanning UI (QR code display) instead of badge
@@ -377,7 +377,7 @@ describe('WhatsAppModule - Evolution API Mode', () => {
       renderWithRouter(<WhatsAppModule />);
       await navigateToConnectView();
 
-      // ── Configure Evolution API ──
+      // â”€â”€ Configure Evolution API â”€â”€
       fireEvent.click(screen.getByText('Evolution API'));
       await waitFor(() => {
         expect(screen.getByText(/Connect via Evolution API/i)).toBeInTheDocument();
@@ -399,7 +399,7 @@ describe('WhatsAppModule - Evolution API Mode', () => {
         expect(screen.getByText('Evolution API Configured')).toBeInTheDocument();
       });
 
-      // ── Switch to Meta mode ──
+      // â”€â”€ Switch to Meta mode â”€â”€
       fireEvent.click(screen.getByText('Meta Official API'));
       await waitFor(() => {
         expect(screen.getByText(/Link your WhatsApp Business account/i)).toBeInTheDocument();
@@ -413,7 +413,7 @@ describe('WhatsAppModule - Evolution API Mode', () => {
       expect(screen.getByText(/Simulate Scan/i)).toBeInTheDocument();
       expect(screen.getByText(/How to connect/i)).toBeInTheDocument();
 
-      // ── Switch back to Evolution mode ──
+      // â”€â”€ Switch back to Evolution mode â”€â”€
       fireEvent.click(screen.getByText('Evolution API'));
 
       // Evolution config must still be preserved
@@ -432,7 +432,7 @@ describe('WhatsAppModule - Evolution API Mode', () => {
       renderWithRouter(<WhatsAppModule />);
       await navigateToConnectView();
 
-      // ── Enter Evolution mode and open config form ──
+      // â”€â”€ Enter Evolution mode and open config form â”€â”€
       fireEvent.click(screen.getByText('Evolution API'));
       await waitFor(() => {
         expect(screen.getByText('Configure Evolution API')).toBeInTheDocument();
@@ -448,7 +448,7 @@ describe('WhatsAppModule - Evolution API Mode', () => {
         target: { value: 'https://persist-test.com' },
       });
 
-      // ── Switch to Meta mode ──
+      // â”€â”€ Switch to Meta mode â”€â”€
       fireEvent.click(screen.getByText('Meta Official API'));
       await waitFor(() => {
         expect(screen.getByText(/Link your WhatsApp Business account/i)).toBeInTheDocument();
@@ -457,7 +457,7 @@ describe('WhatsAppModule - Evolution API Mode', () => {
       // Evolution form fields must NOT be visible in Meta mode
       expect(screen.queryByText('Evolution API Configuration')).not.toBeInTheDocument();
 
-      // ── Switch back to Evolution mode ──
+      // â”€â”€ Switch back to Evolution mode â”€â”€
       fireEvent.click(screen.getByText('Evolution API'));
 
       // The form should still be open (React state persists in mounted component)
@@ -503,7 +503,7 @@ describe('WhatsAppModule - Evolution API Mode', () => {
       renderWithRouter(<WhatsAppModule />);
       await navigateToConnectView();
 
-      // ── Configure Evolution ──
+      // â”€â”€ Configure Evolution â”€â”€
       fireEvent.click(screen.getByText('Evolution API'));
       await waitFor(() => {
         expect(screen.getByText(/Connect via Evolution API/i)).toBeInTheDocument();
@@ -523,7 +523,7 @@ describe('WhatsAppModule - Evolution API Mode', () => {
         expect(screen.getByText('Evolution API Configured')).toBeInTheDocument();
       });
 
-      // ── Switch to Meta ──
+      // â”€â”€ Switch to Meta â”€â”€
       fireEvent.click(screen.getByText('Meta Official API'));
       await waitFor(() => {
         expect(screen.getByText(/Link your WhatsApp Business account/i)).toBeInTheDocument();
@@ -546,19 +546,19 @@ describe('WhatsAppModule - Evolution API Mode', () => {
       renderWithRouter(<WhatsAppModule />);
       await navigateToConnectView();
 
-      // ── Switch to Evolution mode ──
+      // â”€â”€ Switch to Evolution mode â”€â”€
       fireEvent.click(screen.getByText('Evolution API'));
       await waitFor(() => {
         expect(screen.getByText(/Connect via Evolution API/i)).toBeInTheDocument();
       });
 
-      // ── Switch to Meta mode ──
+      // â”€â”€ Switch to Meta mode â”€â”€
       fireEvent.click(screen.getByText('Meta Official API'));
       await waitFor(() => {
         expect(screen.getByText(/Link your WhatsApp Business account/i)).toBeInTheDocument();
       });
 
-      // ── Switch back to Evolution mode ──
+      // â”€â”€ Switch back to Evolution mode â”€â”€
       fireEvent.click(screen.getByText('Evolution API'));
       await waitFor(() => {
         expect(screen.getByText(/Connect via Evolution API/i)).toBeInTheDocument();
@@ -580,18 +580,18 @@ describe('WhatsAppModule - Evolution API Mode', () => {
 
   describe('Evolution API - Disconnect Flow', () => {
     /**
-     * Evolution API disconnect flow (connected → disconnected).
+     * Evolution API disconnect flow (connected â†’ disconnected).
      *
      * The Evolution API only transitions to 'connected' via the mount-time
      * status check (getStatus returning 'open'). There is no automatic
-     * scanning→connected transition like Meta QR mode.
+     * scanningâ†’connected transition like Meta QR mode.
      *
      * Key behavior: connectionMode defaults to 'meta'. The mount-time
      * Evolution auto-connect sets connectionStatus='connected' and
      * isEvolutionConnected=true but does NOT change connectionMode.
      * The connected screen is mode-agnostic (same for both modes).
      * After disconnect, the connect view shows in the current
-     * connectionMode (usually 'meta') — to verify Evolution-specific
+     * connectionMode (usually 'meta') â€” to verify Evolution-specific
      * state, the tests switch to 'evolution' mode after disconnecting.
      */
 
@@ -615,8 +615,8 @@ describe('WhatsAppModule - Evolution API Mode', () => {
         }
         if (typeof url === 'string' && url.includes('/evolution/status')) {
           statusCallCount++;
-          // First call = mount-time check → return 'connected' for auto-connect
-          // Subsequent calls = polling → return 'close' so scanning→connected doesn't auto-trigger
+          // First call = mount-time check â†’ return 'connected' for auto-connect
+          // Subsequent calls = polling â†’ return 'close' so scanningâ†’connected doesn't auto-trigger
           if (statusCallCount === 1) {
             return { data: { data: { status: 'connected' } } };
           }
@@ -786,21 +786,21 @@ describe('WhatsAppModule - Evolution API Mode', () => {
 
   describe('Evolution API - Scanning to Connected Transition', () => {
     /**
-     * Evolution API scanning → connected transition tests.
+     * Evolution API scanning â†’ connected transition tests.
      *
-     * Unlike Meta QR mode (which auto-transitions scanning → connecting → connected
+     * Unlike Meta QR mode (which auto-transitions scanning â†’ connecting â†’ connected
      * via timers at 2s and 4s), the Evolution API connection flow only sets
      * connectionStatus to 'scanning' and waits for an external event (webhook,
      * socket, or page refresh) to detect the connected state.
      *
-     * The only mechanism that transitions scanning → connected is the mount-time
-     * useEffect which checks /evolution/config → /evolution/status. If status
+     * The only mechanism that transitions scanning â†’ connected is the mount-time
+     * useEffect which checks /evolution/config â†’ /evolution/status. If status
      * returns state: 'open', it sets isEvolutionConnected(true) and
      * connectionStatus('connected').
      *
      * These tests verify:
      * 1. Evolution scanning does NOT auto-connect (unlike Meta mode)
-     * 2. Scanning → connected via re-mount with state='open'
+     * 2. Scanning â†’ connected via re-mount with state='open'
      * 3. Scanning persists when switching view tabs
      * 4. Error during Evolution connect shows error message
      */
@@ -844,7 +844,7 @@ describe('WhatsAppModule - Evolution API Mode', () => {
       renderWithRouter(<WhatsAppModule />);
       await navigateToConnectView();
 
-      // ── Configure Evolution API ──
+      // â”€â”€ Configure Evolution API â”€â”€
       fireEvent.click(screen.getByText('Evolution API'));
       await waitFor(() => expect(screen.getByText(/Connect via Evolution API/i)).toBeInTheDocument());
 
@@ -865,7 +865,7 @@ describe('WhatsAppModule - Evolution API Mode', () => {
         expect(screen.getByText('Evolution API Configured')).toBeInTheDocument();
       });
 
-      // ── Connect → scanning ──
+      // â”€â”€ Connect â†’ scanning â”€â”€
       fireEvent.click(screen.getByText('Connect & Get QR Code'));
 
       await waitFor(() => {
@@ -875,7 +875,7 @@ describe('WhatsAppModule - Evolution API Mode', () => {
       // Verify: still Disconnected (scanning !== connected)
       expect(screen.getByText(/Disconnected/)).toBeInTheDocument();
 
-      // Evolution stays Disconnected — no auto-transition to connected
+      // Evolution stays Disconnected â€” no auto-transition to connected
       expect(screen.queryByText(/WhatsApp Connected/i)).not.toBeInTheDocument();
 
       // Verify there is no "Connecting..." overlay (Evolution never enters 'connecting' state)
@@ -885,17 +885,17 @@ describe('WhatsAppModule - Evolution API Mode', () => {
       expect(screen.getByText(/Scan this QR code with WhatsApp/i)).toBeInTheDocument();
     });
 
-    it('transitions scanning → connected when re-mounted with state=open from status check', async () => {
+    it('transitions scanning â†’ connected when re-mounted with state=open from status check', async () => {
       // Simulates what happens after a page refresh or when external polling
       // detects that the Evolution API instance is now connected.
       //
       // Scenario:
       //   1. First mount: Evolution config exists but status returns 'close'
-      //   2. Configure → Connect → scanning state
-      //   3. External event changes server state → 'open'
-      //   4. Unmount + remount with status='open' → connected detects it
+      //   2. Configure â†’ Connect â†’ scanning state
+      //   3. External event changes server state â†’ 'open'
+      //   4. Unmount + remount with status='open' â†’ connected detects it
 
-      // ── First render: status returns 'close' (not connected yet) ──
+      // â”€â”€ First render: status returns 'close' (not connected yet) â”€â”€
       const firstRenderMock = jest.fn().mockImplementation(async (url: string, ..._rest: any[]) => {
         if (url === '/evolution/config') {
           return {
@@ -911,24 +911,24 @@ describe('WhatsAppModule - Evolution API Mode', () => {
 
       const { unmount } = renderWithRouter(<WhatsAppModule />);
 
-      // Wait for mount to settle — should show Disconnected (status is 'close')
+      // Wait for mount to settle â€” should show Disconnected (status is 'close')
       await waitFor(() => {
         expect(screen.getByText(/Disconnected/)).toBeInTheDocument();
       });
 
-      // Navigate to Connection, switch to Evolution — should show configured badge
+      // Navigate to Connection, switch to Evolution â€” should show configured badge
       fireEvent.click(screen.getByText('Connection'));
       await waitFor(() => expect(screen.getByText('Connect WhatsApp')).toBeInTheDocument());
 
       fireEvent.click(screen.getByText('Evolution API'));
       await waitFor(() => expect(screen.getByText('Connect & Get QR Code')).toBeInTheDocument());
 
-      // Connect → scanning
+      // Connect â†’ scanning
       fireEvent.click(screen.getByText('Connect & Get QR Code'));
       await waitFor(() => expect(screen.getByText(/Scan this QR code with WhatsApp/i)).toBeInTheDocument());
       expect(screen.getByText(/Disconnected/)).toBeInTheDocument();
 
-      // ── Simulate external event: server now reports state=open ──
+      // â”€â”€ Simulate external event: server now reports state=open â”€â”€
       unmount();
 
       // Reset mock and set up to return 'open' on next mount
@@ -987,21 +987,21 @@ describe('WhatsAppModule - Evolution API Mode', () => {
       fireEvent.click(screen.getByText(/Save Configuration/i));
       await waitFor(() => expect(screen.getByText('Evolution API Configured')).toBeInTheDocument());
 
-      // Connect → scanning
+      // Connect â†’ scanning
       fireEvent.click(screen.getByText('Connect & Get QR Code'));
       await waitFor(() => expect(screen.getByText(/Scan this QR code with WhatsApp/i)).toBeInTheDocument());
       expect(screen.getByText(/Disconnected/)).toBeInTheDocument();
 
-      // ── Switch to Chats view ──
+      // â”€â”€ Switch to Chats view â”€â”€
       fireEvent.click(screen.getByText('Chats'));
       await waitFor(() => {
-        expect(screen.getByText(/BizzAuto Solutions WhatsApp/i)).toBeInTheDocument();
+        expect(screen.getByText(/— Business Chat/i)).toBeInTheDocument();
       });
 
       // Nav should still show Disconnected
       expect(screen.getByText(/Disconnected/)).toBeInTheDocument();
 
-      // ── Switch back to Connection view ──
+      // â”€â”€ Switch back to Connection view â”€â”€
       fireEvent.click(screen.getByText('Connection'));
       await waitFor(() => {
         expect(screen.getByText('Connect WhatsApp')).toBeInTheDocument();
@@ -1013,7 +1013,7 @@ describe('WhatsAppModule - Evolution API Mode', () => {
         expect(screen.getByText(/Scan this QR code with WhatsApp/i)).toBeInTheDocument();
       });
 
-      // Nav should still show Disconnected — scanning state preserved
+      // Nav should still show Disconnected â€” scanning state preserved
       expect(screen.getByText(/Disconnected/)).toBeInTheDocument();
 
       // Refresh QR Code button should be available in scanning state
@@ -1052,7 +1052,7 @@ describe('WhatsAppModule - Evolution API Mode', () => {
       fireEvent.click(screen.getByText(/Save Configuration/i));
       await waitFor(() => expect(screen.getByText('Evolution API Configured')).toBeInTheDocument());
 
-      // Click Connect — will fail
+      // Click Connect â€” will fail
       fireEvent.click(screen.getByText('Connect & Get QR Code'));
 
       // Error message should appear
@@ -1060,7 +1060,7 @@ describe('WhatsAppModule - Evolution API Mode', () => {
         expect(screen.getByText(/Evolution API instance not reachable/i)).toBeInTheDocument();
       });
 
-      // The component should NOT be in scanning state — nav still shows Disconnected
+      // The component should NOT be in scanning state â€” nav still shows Disconnected
       expect(screen.getByText(/Disconnected/)).toBeInTheDocument();
 
       // Evolution config should still be preserved (error doesn't clear config)
@@ -1103,7 +1103,7 @@ describe('WhatsAppModule - Evolution API Mode', () => {
       fireEvent.click(screen.getByText(/Save Configuration/i));
       await waitFor(() => expect(screen.getByText('Evolution API Configured')).toBeInTheDocument());
 
-      // Click Connect — will fail with network error
+      // Click Connect â€” will fail with network error
       fireEvent.click(screen.getByText('Connect & Get QR Code'));
 
       // The network error message should appear in the error banner
@@ -1117,7 +1117,7 @@ describe('WhatsAppModule - Evolution API Mode', () => {
       // Evolution config should still be preserved
       expect(screen.getByText('Evolution API Configured')).toBeInTheDocument();
 
-      // The configured badge and error banner both show the URL — verify it appears
+      // The configured badge and error banner both show the URL â€” verify it appears
       expect(screen.getAllByText(/invalid\.example\.com/).length).toBeGreaterThanOrEqual(1);
 
       // User should still be able to update configuration after error
@@ -1160,7 +1160,7 @@ describe('WhatsAppModule - Evolution API Mode', () => {
       fireEvent.click(screen.getByText(/Save Configuration/i));
       await waitFor(() => expect(screen.getByText('Evolution API Configured')).toBeInTheDocument());
 
-      // Click Connect — will fail with auth error
+      // Click Connect â€” will fail with auth error
       fireEvent.click(screen.getByText('Connect & Get QR Code'));
 
       // The authentication error message should appear
@@ -1214,7 +1214,7 @@ describe('WhatsAppModule - Evolution API Mode', () => {
       fireEvent.click(screen.getByText(/Save Configuration/i));
       await waitFor(() => expect(screen.getByText('Evolution API Configured')).toBeInTheDocument());
 
-      // Click Connect — will fail with timeout error
+      // Click Connect â€” will fail with timeout error
       fireEvent.click(screen.getByText('Connect & Get QR Code'));
 
       // The timeout error message should appear
@@ -1228,7 +1228,7 @@ describe('WhatsAppModule - Evolution API Mode', () => {
       // Evolution config should still be preserved
       expect(screen.getByText('Evolution API Configured')).toBeInTheDocument();
 
-      // User should be able to retry — connect button still present
+      // User should be able to retry â€” connect button still present
       expect(screen.getByText('Connect & Get QR Code')).toBeInTheDocument();
 
       // Restore mock

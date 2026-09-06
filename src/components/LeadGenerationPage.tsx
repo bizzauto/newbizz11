@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { Users, Search, Download, MessageSquare, Mail, Phone, Plus, X, Eye, Send, Trash2, MapPin, Package, Truck, CheckCircle, AlertCircle, RefreshCw, ArrowUpRight, TrendingUp, UserPlus, Settings, Upload, Zap, MailOpen, Shield, ChevronDown, Loader2, Info } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RT, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import LeadFinderPage from './LeadFinderPage';
@@ -140,12 +140,12 @@ export default function LeadGenerationPage(){
       msg += `Subject: ${e.subject}\n`;
       msg += `Preview: ${(e.textPreview || '').substring(0, 300)}\n\n`;
     });
-    alert(msg);
+    setToast({ m: msg, t: 'success' }); setTimeout(() => setToast(null), 3000);
    } else {
-    alert(`Error: ${d.error || d.data?.error || 'Debug failed'}`);
+    setToast({ m: `Error: ${d.error || d.data?.error || 'Debug failed'}`, t: 'error' }); setTimeout(() => setToast(null), 3000);
    }
   } catch (e: any) {
-   alert('Debug error: ' + e.message);
+   setToast({ m: 'Debug error: ' + e.message, t: 'error' }); setTimeout(() => setToast(null), 3000);
   }
   setImSyncing(false);
  };
@@ -325,9 +325,9 @@ export default function LeadGenerationPage(){
  {/* Platform Stats */}
  <div className="grid grid-cols-3 gap-3 mb-4">
   {[
-   { name: 'IndiaMART', color: 'from-orange-500 to-red-500', icon: '🏭', count: leads.filter(l => l.source === 'indiamart').length },
-   { name: 'JustDial', color: 'from-yellow-500 to-orange-500', icon: '📞', count: leads.filter(l => l.source === 'justdial').length },
-   { name: 'TradeIndia', color: 'from-blue-500 to-indigo-500', icon: '🌐', count: leads.filter(l => l.source === 'tradeindia').length },
+   { name: 'IndiaMART', color: 'from-orange-500 to-red-500', icon: 'ðŸ­', count: leads.filter(l => l.source === 'indiamart').length },
+   { name: 'JustDial', color: 'from-yellow-500 to-orange-500', icon: '📍', count: leads.filter(l => l.source === 'justdial').length },
+   { name: 'TradeIndia', color: 'from-blue-500 to-indigo-500', icon: 'ðŸ', count: leads.filter(l => l.source === 'tradeindia').length },
   ].map(p => (
    <div key={p.name} className={`bg-gradient-to-r ${p.color} rounded-xl p-3 text-white text-center`}>
     <p className="text-lg">{p.icon}</p>

@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "Review Management",
   "nodes": [
     {
@@ -48,7 +48,7 @@
       "position": [910, 200],
       "parameters": {
         "method": "POST",
-        "url": "https://crm.bizzauto.app/api/tasks",
+        "url": "https://bizzautoai.com/api/tasks",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,

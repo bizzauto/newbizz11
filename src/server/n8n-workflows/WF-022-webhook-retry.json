@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "Webhook Retry",
   "nodes": [
     {
@@ -33,7 +33,7 @@
       "position": [690, 300],
       "parameters": {
         "method": "POST",
-        "url": "https://crm.bizzauto.app/api/ingest",
+        "url": "https://bizzautoai.com/api/ingest",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,

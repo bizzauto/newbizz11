@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "Error Handler",
   "nodes": [
     {
@@ -33,7 +33,7 @@
       "position": [690, 300],
       "parameters": {
         "method": "POST",
-        "url": "https://crm.bizzauto.app/api/admin/alert",
+        "url": "https://bizzautoai.com/api/admin/alert",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,

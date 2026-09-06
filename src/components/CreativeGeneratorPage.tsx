@@ -55,59 +55,59 @@ const FONT_OPTIONS = [
 ];
 
 const FORMAT_OPTIONS = [
-  { name: 'Square', desc: '1080Ã—1080', ratio: 'aspect-square', width: 1080, height: 1080 },
-  { name: 'Story', desc: '1080Ã—1920', ratio: 'aspect-[9/16]', width: 1080, height: 1920 },
-  { name: 'Landscape', desc: '1200Ã—628', ratio: 'aspect-[16/9]', width: 1200, height: 628 },
+  { name: 'Square', desc: '1080×1080', ratio: 'aspect-square', width: 1080, height: 1080 },
+  { name: 'Story', desc: '1080×1920', ratio: 'aspect-[9/16]', width: 1080, height: 1920 },
+  { name: 'Landscape', desc: '1200×628', ratio: 'aspect-[16/9]', width: 1200, height: 628 },
 ];
 
 const CATEGORIES = ['Festival', 'Offer', 'Product', 'Seasonal', 'Menu', 'Price List', 'Testimonial', 'Wedding', 'Birthday'];
 
 const DEFAULT_TEMPLATES: Template[] = [
-  { id: '1', name: 'Diwali Special', emoji: 'ðŸª”', gradient: 'from-orange-500 via-red-500 to-yellow-500', category: 'Festival' },
-  { id: '2', name: 'Holi Colors', emoji: 'ðŸŽ¨', gradient: 'from-pink-500 via-purple-500 to-blue-500', category: 'Festival' },
-  { id: '3', name: 'Eid Mubarak', emoji: 'ðŸŒ™', gradient: 'from-emerald-500 via-teal-500 to-cyan-500', category: 'Festival' },
-  { id: '4', name: 'Christmas', emoji: 'ðŸŽ„', gradient: 'from-red-600 via-green-600 to-red-700', category: 'Festival' },
-  { id: '5', name: 'Pongal Wishes', emoji: 'ðŸŒ¾', gradient: 'from-yellow-600 via-orange-500 to-red-500', category: 'Festival' },
-  { id: '6', name: 'Flash Sale', emoji: 'âš¡', gradient: 'from-blue-600 via-indigo-600 to-purple-600', category: 'Offer' },
-  { id: '7', name: 'Grand Opening', emoji: 'ðŸª', gradient: 'from-amber-500 via-orange-500 to-red-500', category: 'Offer' },
-  { id: '8', name: 'Buy 1 Get 1', emoji: 'ðŸŽ¯', gradient: 'from-green-500 via-teal-500 to-cyan-500', category: 'Offer' },
-  { id: '9', name: '50% Off', emoji: 'ðŸ·', gradient: 'from-pink-500 via-rose-500 to-red-500', category: 'Offer' },
-  { id: '10', name: 'New Arrival', emoji: 'ðŸ†•', gradient: 'from-violet-500 via-purple-500 to-fuchsia-500', category: 'Product' },
-  { id: '11', name: 'Best Seller', emoji: 'ðŸ†', gradient: 'from-amber-600 via-yellow-500 to-orange-500', category: 'Product' },
-  { id: '12', name: 'Summer Deal', emoji: 'â˜€', gradient: 'from-yellow-400 via-orange-400 to-red-400', category: 'Seasonal' },
-  { id: '13', name: 'Monsoon Sale', emoji: 'ðŸŒ§', gradient: 'from-slate-500 via-blue-500 to-indigo-500', category: 'Seasonal' },
-  { id: '14', name: 'Winter Collection', emoji: 'â„', gradient: 'from-blue-300 via-indigo-400 to-purple-500', category: 'Seasonal' },
-  { id: '15', name: 'Todays Special', emoji: 'ðŸ½', gradient: 'from-amber-600 via-orange-500 to-red-500', category: 'Menu' },
-  { id: '16', name: 'Biryani Fest', emoji: 'ðŸ›', gradient: 'from-red-700 via-orange-600 to-yellow-500', category: 'Menu' },
-  { id: '17', name: 'Pizza Offer', emoji: 'ðŸ•', gradient: 'from-green-600 via-yellow-500 to-red-500', category: 'Menu' },
-  { id: '18', name: 'Price List', emoji: 'ðŸ“‹', gradient: 'from-gray-600 via-slate-500 to-blue-600', category: 'Price List' },
-  { id: '19', name: 'Rate Card', emoji: 'ðŸ’°', gradient: 'from-emerald-600 via-green-500 to-teal-500', category: 'Price List' },
-  { id: '20', name: 'Customer Review', emoji: 'â­', gradient: 'from-purple-600 via-pink-500 to-rose-500', category: 'Testimonial' },
-  { id: '21', name: 'Happy Clients', emoji: 'ðŸ˜Š', gradient: 'from-teal-500 via-cyan-500 to-blue-500', category: 'Testimonial' },
-  { id: '22', name: 'Wedding Invite', emoji: 'ðŸ’', gradient: 'from-pink-400 via-rose-400 to-red-400', category: 'Wedding' },
-  { id: '23', name: 'Engagement', emoji: 'ðŸ’Ž', gradient: 'from-cyan-400 via-blue-400 to-indigo-400', category: 'Wedding' },
-  { id: '24', name: 'Birthday Party', emoji: 'ðŸŽ‚', gradient: 'from-pink-400 via-purple-400 to-indigo-400', category: 'Birthday' },
-  { id: '25', name: 'Kids Party', emoji: 'ðŸŽˆ', gradient: 'from-yellow-300 via-green-300 to-blue-300', category: 'Birthday' },
+  { id: '1', name: 'Diwali Special', emoji: '🪔', gradient: 'from-orange-500 via-red-500 to-yellow-500', category: 'Festival' },
+  { id: '2', name: 'Holi Colors', emoji: '🎨', gradient: 'from-pink-500 via-purple-500 to-blue-500', category: 'Festival' },
+  { id: '3', name: 'Eid Mubarak', emoji: '🌙', gradient: 'from-emerald-500 via-teal-500 to-cyan-500', category: 'Festival' },
+  { id: '4', name: 'Christmas', emoji: '🎄', gradient: 'from-red-600 via-green-600 to-red-700', category: 'Festival' },
+  { id: '5', name: 'Pongal Wishes', emoji: '🌾', gradient: 'from-yellow-600 via-orange-500 to-red-500', category: 'Festival' },
+  { id: '6', name: 'Flash Sale', emoji: '⚡', gradient: 'from-blue-600 via-indigo-600 to-purple-600', category: 'Offer' },
+  { id: '7', name: 'Grand Opening', emoji: '🎊', gradient: 'from-amber-500 via-orange-500 to-red-500', category: 'Offer' },
+  { id: '8', name: 'Buy 1 Get 1', emoji: '🛍️', gradient: 'from-green-500 via-teal-500 to-cyan-500', category: 'Offer' },
+  { id: '9', name: '50% Off', emoji: '🏷️', gradient: 'from-pink-500 via-rose-500 to-red-500', category: 'Offer' },
+  { id: '10', name: 'New Arrival', emoji: '✨', gradient: 'from-violet-500 via-purple-500 to-fuchsia-500', category: 'Product' },
+  { id: '11', name: 'Best Seller', emoji: '🏆', gradient: 'from-amber-600 via-yellow-500 to-orange-500', category: 'Product' },
+  { id: '12', name: 'Summer Deal', emoji: '☀️', gradient: 'from-yellow-400 via-orange-400 to-red-400', category: 'Seasonal' },
+  { id: '13', name: 'Monsoon Sale', emoji: '🌧️', gradient: 'from-slate-500 via-blue-500 to-indigo-500', category: 'Seasonal' },
+  { id: '14', name: 'Winter Collection', emoji: '❄️', gradient: 'from-blue-300 via-indigo-400 to-purple-500', category: 'Seasonal' },
+  { id: '15', name: 'Todays Special', emoji: '🍽️', gradient: 'from-amber-600 via-orange-500 to-red-500', category: 'Menu' },
+  { id: '16', name: 'Biryani Fest', emoji: '🛍', gradient: 'from-red-700 via-orange-600 to-yellow-500', category: 'Menu' },
+  { id: '17', name: 'Pizza Offer', emoji: 'ðŸ•', gradient: 'from-green-600 via-yellow-500 to-red-500', category: 'Menu' },
+  { id: '18', name: 'Price List', emoji: '📍', gradient: 'from-gray-600 via-slate-500 to-blue-600', category: 'Price List' },
+  { id: '19', name: 'Rate Card', emoji: '💰', gradient: 'from-emerald-600 via-green-500 to-teal-500', category: 'Price List' },
+  { id: '20', name: 'Customer Review', emoji: '⭐', gradient: 'from-purple-600 via-pink-500 to-rose-500', category: 'Testimonial' },
+  { id: '21', name: 'Happy Clients', emoji: '😊', gradient: 'from-teal-500 via-cyan-500 to-blue-500', category: 'Testimonial' },
+  { id: '22', name: 'Wedding Invite', emoji: 'ðŸ’', gradient: 'from-pink-400 via-rose-400 to-red-400', category: 'Wedding' },
+  { id: '23', name: 'Engagement', emoji: '💎', gradient: 'from-cyan-400 via-blue-400 to-indigo-400', category: 'Wedding' },
+  { id: '24', name: 'Birthday Party', emoji: 'ðŸ‚', gradient: 'from-pink-400 via-purple-400 to-indigo-400', category: 'Birthday' },
+  { id: '25', name: 'Kids Party', emoji: 'ðŸˆ', gradient: 'from-yellow-300 via-green-300 to-blue-300', category: 'Birthday' },
 ];
 
 const LOGO_STYLES: LogoStyle[] = [
-  { id: 'modern', name: 'Modern', icon: 'ðŸ”·', gradient: 'from-blue-500 to-orange-500' },
-  { id: 'classic', name: 'Classic', icon: 'âœ¨', gradient: 'from-amber-500 to-red-500' },
-  { id: 'minimal', name: 'Minimal', icon: 'â­•', gradient: 'from-gray-500 to-slate-500' },
-  { id: 'playful', name: 'Playful', icon: 'â­', gradient: 'from-pink-500 to-yellow-500' },
-  { id: 'nature', name: 'Nature', icon: 'ðŸŒ¿', gradient: 'from-green-500 to-emerald-500' },
-  { id: 'luxury', name: 'Luxury', icon: 'ðŸ‘‘', gradient: 'from-yellow-600 to-amber-700' },
+  { id: 'modern', name: 'Modern', icon: '🔄·', gradient: 'from-blue-500 to-orange-500' },
+  { id: 'classic', name: 'Classic', icon: '✨', gradient: 'from-amber-500 to-red-500' },
+  { id: 'minimal', name: 'Minimal', icon: '⭐•', gradient: 'from-gray-500 to-slate-500' },
+  { id: 'playful', name: 'Playful', icon: '⭐', gradient: 'from-pink-500 to-yellow-500' },
+  { id: 'nature', name: 'Nature', icon: 'ðŸ¿', gradient: 'from-green-500 to-emerald-500' },
+  { id: 'luxury', name: 'Luxury', icon: '👌‘', gradient: 'from-yellow-600 to-amber-700' },
 ];
 
-const STICKERS = ['â­', 'ðŸ”¥', 'â¤ï¸', 'âœ¨', 'ðŸŽ‰', 'ðŸ’¥', 'ðŸŽ¯', 'âœ…', 'ðŸš€', 'ðŸ’°', 'ðŸ’Ž', 'ðŸ†', 'ðŸŒŸ', 'ðŸŽª', 'ðŸŽ¨', 'ðŸ›ï¸', 'ðŸ“±', 'ðŸŽ', 'ðŸ’¡', 'ðŸ“¢', 'ðŸ¥‡', 'ðŸ“£', 'ðŸ’«', 'ðŸŽŠ', 'ðŸ›¡ï¸', 'ðŸ…', 'âœ…', 'ðŸ“‹', 'ðŸ›ï¸', 'ðŸ”'];
+const STICKERS = ['⭐', '🔥', 'â¤️', '✨', '🎉', '💥', '🎯', '✅', '🚀', '💰', '💎', '🆕', '🌟', '🎪', '🎨', '🛍️', '📌', '🎵', '💡', '📌', '🥇', '📌', '💫', '🌸', '🛍️', '🏆', '✅', '📍', '🛍️', '🔄'];
 
 const TRUST_BADGES = [
-  { emoji: 'ðŸ›¡ï¸', label: 'Warranty' },
-  { emoji: 'ðŸ…', label: 'Guarantee' },
-  { emoji: 'âœ…', label: 'Certified' },
-  { emoji: 'ðŸ“‹', label: 'ISO' },
-  { emoji: 'ðŸ›ï¸', label: 'ISI' },
-  { emoji: 'ðŸ”', label: 'BIS' },
+  { emoji: '🛍️', label: 'Warranty' },
+  { emoji: '🏆', label: 'Guarantee' },
+  { emoji: '✅', label: 'Certified' },
+  { emoji: '📍', label: 'ISO' },
+  { emoji: '🛍️', label: 'ISI' },
+  { emoji: '🔄', label: 'BIS' },
 ];
 
 const DEFAULT_POSITIONS: Record<string, { x: number; y: number }> = {
@@ -136,7 +136,7 @@ const AI_PROMPTS: Record<string, string[]> = {
     'Festival special combo offer',
     'First time customer discount 20%',
     'Loyalty reward points program',
-    'Refer a friend and get â‚¹500 off',
+    'Refer a friend and get ₹500 off',
   ],
   Product: [
     'New smartphone launch with specs',
@@ -528,8 +528,8 @@ const CreativeGeneratorPage: React.FC = () => {
   };
 
   const getEmojiForCategory = (cat: string): string => {
-    const map: Record<string, string> = { Festival: 'ðŸŽ‰', Offer: 'ðŸŽ', Product: 'ðŸ“¦', Seasonal: 'ðŸŒ¸', Testimonial: 'â­', Menu: 'ðŸ½', 'Price List': 'ðŸ’°', Wedding: 'ðŸ’', Birthday: 'ðŸŽ‚' };
-    return map[cat] || 'ðŸŽ¨';
+    const map: Record<string, string> = { Festival: '🎉', Offer: '🎵', Product: '📍', Seasonal: 'ðŸ¸', Testimonial: '⭐', Menu: 'ðŸ½', 'Price List': '💰', Wedding: 'ðŸ’', Birthday: 'ðŸ‚' };
+    return map[cat] || '🎨';
   };
   const getGradientForCategory = (cat: string): string => {
     const map: Record<string, string> = { Festival: 'from-orange-500 via-red-500 to-yellow-500', Offer: 'from-blue-600 via-indigo-600 to-purple-600', Product: 'from-violet-500 via-purple-500 to-fuchsia-500', Seasonal: 'from-yellow-400 via-orange-400 to-red-400', Testimonial: 'from-green-500 via-teal-500 to-cyan-500', Menu: 'from-amber-500 via-orange-500 to-red-500', 'Price List': 'from-slate-500 via-blue-500 to-indigo-500', Wedding: 'from-pink-400 via-rose-400 to-red-400', Birthday: 'from-pink-400 via-purple-400 to-indigo-400' };
@@ -620,10 +620,10 @@ const CreativeGeneratorPage: React.FC = () => {
     try {
       const token = localStorage.getItem('token');
       const imgUrl = aiImageUrl || '';
-      const caption = `*${headline || 'Check this!'}*\n${subtitle || ''}\n\n${businessName ? `ðŸª ${businessName}` : ''}\n${phone ? `ðŸ“ž ${phone}` : ''}`;
+      const caption = `*${headline || 'Check this!'}*\n${subtitle || ''}\n\n${businessName ? `🏪 ${businessName}` : ''}\n${phone ? `📍 ${phone}` : ''}`;
       const to = phone?.replace(/\D/g, '') || '';
-      if (!imgUrl) { alert('Generate poster image first'); return; }
-      if (!to || to.length < 10) { alert('Enter customer phone number to share'); return; }
+      if (!imgUrl) { showToast('Generate poster image first', 'error'); return; }
+      if (!to || to.length < 10) { showToast('Enter customer phone number to share', 'error'); return; }
 
       // Upload image to server first (if it's a data URL, serve from public)
       let publicUrl = imgUrl;
@@ -644,9 +644,9 @@ const CreativeGeneratorPage: React.FC = () => {
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify({ to, mediaUrl: publicUrl, mediaType: 'image', caption }),
       });
-      alert('âœ… Poster sent via WhatsApp!');
+      showToast('Poster sent via WhatsApp!')
     } catch (e: any) {
-      alert(e?.message || 'Share failed');
+      showToast(e?.message || 'Share failed', 'error')
     }
   };
 
@@ -716,7 +716,7 @@ const CreativeGeneratorPage: React.FC = () => {
           {(['create', 'history'] as const).map(v => (
             <button key={v} onClick={() => setActiveView(v)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeView === v ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'}`}>
-              {v === 'create' ? 'âœ¨ Create' : 'ðŸ“‚ History'}
+              {v === 'create' ? '✨ Create' : '📍‚ History'}
             </button>
           ))}
         </div>
@@ -761,7 +761,7 @@ const CreativeGeneratorPage: React.FC = () => {
                   {/* Premium Badge */}
                   {showPremiumBadge && (
                     <div className="absolute top-3 right-3 z-20">
-                      <div className="px-2.5 py-1 bg-gradient-to-r from-yellow-400 to-amber-500 text-black text-[10px] font-bold rounded-full shadow-lg flex items-center gap-1">â­ PREMIUM</div>
+                      <div className="px-2.5 py-1 bg-gradient-to-r from-yellow-400 to-amber-500 text-black text-[10px] font-bold rounded-full shadow-lg flex items-center gap-1">⭐ PREMIUM</div>
                     </div>
                   )}
 
@@ -798,7 +798,7 @@ const CreativeGeneratorPage: React.FC = () => {
                           <img src={productImage} alt={productName} className="w-full h-full object-cover" style={photoFilterStyle} />
                         </div>
                       ) : (
-                        <div className="text-3xl sm:text-4xl md:text-6xl drop-shadow-lg">{selectedTemplate?.emoji || 'ðŸŽ¨'}</div>
+                        <div className="text-3xl sm:text-4xl md:text-6xl drop-shadow-lg">{selectedTemplate?.emoji || '🎨'}</div>
                       )}
                       {productName && productImage && (
                         <p className="text-white/80 text-xs font-medium mt-1 text-center drop-shadow-md"
@@ -858,7 +858,7 @@ const CreativeGeneratorPage: React.FC = () => {
                         <div className="text-left">
                           <p className="font-semibold text-xs drop-shadow-md"
                             style={{ color: businessColor !== '#FFFFFF' ? businessColor : textColor, fontFamily: FONT_OPTIONS[selectedFont].family }}>
-                            {businessName || (language === 'hi' ? 'à¤µà¥à¤¯à¤µà¤¸à¤¾à¤¯' : 'Business Name')}
+                            {businessName || (language === 'hi' ? 'व�यवसाय' : 'Business Name')}
                           </p>
                           <p className="text-[11px] opacity-80 drop-shadow-md" style={{ color: businessColor !== '#FFFFFF' ? businessColor : textColor }}>{phone || '+91 XXXXX XXXXX'}</p>
                         </div>
@@ -906,21 +906,21 @@ const CreativeGeneratorPage: React.FC = () => {
                     style={{ fontFamily: language === 'hi' ? "'Noto Sans Devanagari', sans-serif" : 'inherit' }} />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">{language === 'hi' ? 'Ã Â¤â€°Ã Â¤ÂªÃ Â¤Â¶Ã Â¥â‚¬Ã Â¤Â°Ã Â¥ÂÃ Â¤Â·Ã Â¤â€¢' : 'Subtitle'}</label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">{language === 'hi' ? 'उपशीर्षक' : 'Subtitle'}</label>
                   <input type="text" value={subtitle} onChange={(e) => setSubtitle(e.target.value)}
                     className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    placeholder={language === 'hi' ? 'Ã Â¤â€°Ã Â¤ÂªÃ Â¤Â¶Ã Â¥â‚¬Ã Â¤Â°Ã Â¥ÂÃ Â¤Â·Ã Â¤â€¢ Ã Â¤Â²Ã Â¤Â¿Ã Â¤â€“Ã Â¥â€¡Ã Â¤â€š...' : 'Enter subtitle...'}
+                    placeholder={language === 'hi' ? 'उपशीर्षक लिखें...' : 'Enter subtitle...'}
                     style={{ fontFamily: language === 'hi' ? "'Noto Sans Devanagari', sans-serif" : 'inherit' }} />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">{language === 'hi' ? 'Ã Â¤ÂµÃ Â¥ÂÃ Â¤Â¯Ã Â¤ÂµÃ Â¤Â¸Ã Â¤Â¾Ã Â¤Â¯ Ã Â¤â€¢Ã Â¤Â¾ Ã Â¤Â¨Ã Â¤Â¾Ã Â¤Â®' : 'Business Name'}</label>
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">{language === 'hi' ? 'व्यवसाय का नाम' : 'Business Name'}</label>
                     <input type="text" value={businessName} onChange={(e) => setBusinessName(e.target.value)}
                       className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      placeholder={language === 'hi' ? 'Ã Â¤ÂµÃ Â¥ÂÃ Â¤Â¯Ã Â¤ÂµÃ Â¤Â¸Ã Â¤Â¾Ã Â¤Â¯ Ã Â¤â€¢Ã Â¤Â¾ Ã Â¤Â¨Ã Â¤Â¾Ã Â¤Â®...' : 'Business name...'} />
+                      placeholder={language === 'hi' ? 'व्यवसाय का नाम...' : 'Business name...'} />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">{language === 'hi' ? 'Ã Â¤Â«Ã Â¤Â¼Ã Â¥â€¹Ã Â¤Â¨ Ã Â¤Â¨Ã Â¤â€šÃ Â¤Â¬Ã Â¤Â°' : 'Phone'}</label>
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">{language === 'hi' ? 'फ़ोन नंबर' : 'Phone'}</label>
                     <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)}
                       className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       placeholder="+91 XXXXX XXXXX" />
@@ -1044,13 +1044,13 @@ const CreativeGeneratorPage: React.FC = () => {
                 {(['basic', 'photo', 'filters', 'effects', 'stickers', 'layout', 'colors'] as const).map(tab => (
                   <button key={tab} onClick={() => setActiveDesignTab(tab)}
                     className={`px-3 py-1.5 rounded-lg text-[10px] font-medium whitespace-nowrap transition-all ${activeDesignTab === tab ? 'bg-purple-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}`}>
-                    {tab === 'basic' && 'ðŸŽ¨ Basic'}
-                    {tab === 'photo' && 'ðŸ“¸ Photo'}
-                    {tab === 'filters' && 'ðŸ”„ Filters'}
-                    {tab === 'effects' && 'âœ¨ Effects'}
-                    {tab === 'stickers' && 'ðŸ˜Š Stickers'}
-                    {tab === 'layout' && 'ðŸ“ Layout'}
-                    {tab === 'colors' && 'ðŸŽ¯ Colors'}
+                    {tab === 'basic' && '🎨 Basic'}
+                    {tab === 'photo' && '📍 Photo'}
+                    {tab === 'filters' && '🔄„ Filters'}
+                    {tab === 'effects' && '✨ Effects'}
+                    {tab === 'stickers' && '😊 Stickers'}
+                    {tab === 'layout' && '📍 Layout'}
+                    {tab === 'colors' && '🎯 Colors'}
                   </button>
                 ))}
               </div>
@@ -1062,7 +1062,7 @@ const CreativeGeneratorPage: React.FC = () => {
                     <label className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 flex items-center gap-1"><Globe size={12} /> Language</label>
                     <div className="grid grid-cols-2 gap-2">
                       <button onClick={() => setLanguage('en')} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${language === 'en' ? 'bg-purple-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}`}>English</button>
-                      <button onClick={() => setLanguage('hi')} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${language === 'hi' ? 'bg-purple-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}`}>à¤¹à¤¿à¤¨à¥à¤¦à¥€</button>
+                      <button onClick={() => setLanguage('hi')} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${language === 'hi' ? 'bg-purple-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}`}>हिन�द�€</button>
                     </div>
                   </div>
                   <div className="mb-3">
@@ -1211,7 +1211,7 @@ const CreativeGeneratorPage: React.FC = () => {
                       <button onClick={() => setShowPremiumBadge(!showPremiumBadge)} className={`w-9 h-4.5 rounded-full transition-all ${showPremiumBadge ? 'bg-purple-500' : 'bg-gray-300 dark:bg-gray-600'}`}>
                         <div className={`w-3.5 h-3.5 bg-white rounded-full shadow-sm transition-all ${showPremiumBadge ? 'translate-x-[18px]' : 'translate-x-0.5'}`} />
                       </button>
-                      <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400">â­ Badge</span>
+                      <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400">⭐ Badge</span>
                     </label>
                   </div>
                   {/* Brand Kit */}
@@ -1246,30 +1246,30 @@ const CreativeGeneratorPage: React.FC = () => {
               {/* PHOTO EDIT TAB */}
               {activeDesignTab === 'photo' && productImage && (
                 <div className="space-y-3">
-                  <p className="text-xs font-semibold text-purple-500 mb-2">ðŸ“¸ Photo Editor</p>
+                  <p className="text-xs font-semibold text-purple-500 mb-2">📍 Photo Editor</p>
                   <div>
-                    <label className="text-[10px] text-gray-500 mb-1 block">Rotate: {photoRotation}Â°</label>
+                    <label className="text-[10px] text-gray-500 mb-1 block">Rotate: {photoRotation}°</label>
                     <div className="flex gap-1.5">
-                      <button onClick={() => setPhotoRotation(r => r - 90)} className="flex-1 px-2 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg text-[10px] font-medium hover:bg-purple-100 dark:hover:bg-purple-900/30">â†º -90Â°</button>
+                      <button onClick={() => setPhotoRotation(r => r - 90)} className="flex-1 px-2 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg text-[10px] font-medium hover:bg-purple-100 dark:hover:bg-purple-900/30">â†º -90°</button>
                       <button onClick={() => setPhotoRotation(0)} className="flex-1 px-2 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg text-[10px] font-medium hover:bg-purple-100 dark:hover:bg-purple-900/30">Reset</button>
-                      <button onClick={() => setPhotoRotation(r => r + 90)} className="flex-1 px-2 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg text-[10px] font-medium hover:bg-purple-100 dark:hover:bg-purple-900/30">â†» +90Â°</button>
+                      <button onClick={() => setPhotoRotation(r => r + 90)} className="flex-1 px-2 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg text-[10px] font-medium hover:bg-purple-100 dark:hover:bg-purple-900/30">â†» +90°</button>
                     </div>
                   </div>
                   <div>
                     <label className="text-[10px] text-gray-500 mb-1 block">Flip</label>
                     <div className="grid grid-cols-2 gap-1.5">
                       <button onClick={() => setPhotoFlipH(!photoFlipH)} className={`px-2 py-1.5 rounded-lg text-[10px] font-medium transition-all ${photoFlipH ? 'bg-purple-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}`}>
-                        â‡” Horizontal {photoFlipH ? 'âœ“' : ''}
+                        â‡” Horizontal {photoFlipH ? 'â“' : ''}
                       </button>
                       <button onClick={() => setPhotoFlipV(!photoFlipV)} className={`px-2 py-1.5 rounded-lg text-[10px] font-medium transition-all ${photoFlipV ? 'bg-purple-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}`}>
-                        â‡• Vertical {photoFlipV ? 'âœ“' : ''}
+                        â‡• Vertical {photoFlipV ? 'â“' : ''}
                       </button>
                     </div>
                   </div>
                   <div><label className="text-[10px] text-gray-500">Brightness: {photoBrightness}%</label><input type="range" min="0" max="200" value={photoBrightness} onChange={(e) => setPhotoBrightness(Number(e.target.value))} className="w-full h-1 accent-purple-500" /></div>
                   <div><label className="text-[10px] text-gray-500">Contrast: {photoContrast}%</label><input type="range" min="0" max="200" value={photoContrast} onChange={(e) => setPhotoContrast(Number(e.target.value))} className="w-full h-1 accent-purple-500" /></div>
                   <div><label className="text-[10px] text-gray-500">Saturation: {photoSaturation}%</label><input type="range" min="0" max="200" value={photoSaturation} onChange={(e) => setPhotoSaturation(Number(e.target.value))} className="w-full h-1 accent-purple-500" /></div>
-                  <div><label className="text-[10px] text-gray-500">Hue Rotate: {photoHue}Â°</label><input type="range" min="0" max="360" value={photoHue} onChange={(e) => setPhotoHue(Number(e.target.value))} className="w-full h-1 accent-purple-500" /></div>
+                  <div><label className="text-[10px] text-gray-500">Hue Rotate: {photoHue}°</label><input type="range" min="0" max="360" value={photoHue} onChange={(e) => setPhotoHue(Number(e.target.value))} className="w-full h-1 accent-purple-500" /></div>
                   <div><label className="text-[10px] text-gray-500">Opacity: {photoOpacity}%</label><input type="range" min="0" max="100" value={photoOpacity} onChange={(e) => setPhotoOpacity(Number(e.target.value))} className="w-full h-1 accent-purple-500" /></div>
                   <div>
                     <label className="text-[10px] text-gray-500 mb-1 block">Border: {photoBorder}px</label>
@@ -1288,7 +1288,7 @@ const CreativeGeneratorPage: React.FC = () => {
                 </div>
               )}
               {activeDesignTab === 'photo' && !productImage && (
-                <p className="text-xs text-gray-400 text-center py-6">ðŸ“¸ Upload a product image first to edit it</p>
+                <p className="text-xs text-gray-400 text-center py-6">📍 Upload a product image first to edit it</p>
               )}
 
               {/* FILTERS TAB */}
@@ -1367,7 +1367,7 @@ const CreativeGeneratorPage: React.FC = () => {
                     ))}
                   </div>
                   <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
-                    <p className="text-[10px] font-medium text-gray-500 mb-2">ðŸ›¡ï¸ Trust Badges</p>
+                    <p className="text-[10px] font-medium text-gray-500 mb-2">🛍️ Trust Badges</p>
                     <div className="grid grid-cols-3 gap-1.5">
                       {TRUST_BADGES.map((b, i) => (
                         <button key={i} onClick={() => addSticker(b.emoji)}
@@ -1384,12 +1384,12 @@ const CreativeGeneratorPage: React.FC = () => {
               {/* LAYOUT TAB */}
               {activeDesignTab === 'layout' && (
                 <div className="space-y-3">
-                  <p className="text-xs font-semibold text-purple-500 mb-2">ðŸ“ Drag elements on poster or use sliders</p>
+                  <p className="text-xs font-semibold text-purple-500 mb-2">📍 Drag elements on poster or use sliders</p>
                   {Object.entries(elementPositions).map(([key, pos]) => (
                     <div key={key} className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-2.5">
                       <div className="flex items-center justify-between mb-1.5">
                         <span className="text-[10px] font-medium text-gray-600 dark:text-gray-300 capitalize">
-                          {key === 'productImage' ? 'ðŸ–¼ Product Image' : key === 'headline' ? 'ðŸ“ Headline' : key === 'subtitle' ? 'ðŸ’¬ Subtitle' : 'ðŸª Business Info'}
+                          {key === 'productImage' ? 'ðŸ–¼ Product Image' : key === 'headline' ? '📍 Headline' : key === 'subtitle' ? 'ðŸ’¬ Subtitle' : '🏪 Business Info'}
                         </span>
                         <span className="text-[9px] text-gray-400">{Math.round(pos.x)}%, {Math.round(pos.y)}%</span>
                       </div>
@@ -1413,18 +1413,18 @@ const CreativeGeneratorPage: React.FC = () => {
                     className="w-full py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg text-xs font-medium hover:shadow-lg transition-all flex items-center justify-center gap-1.5">
                     <RefreshCw size={12} /> Reset Layout
                   </button>
-                  <p className="text-[9px] text-gray-400 text-center">ðŸ’¡ Drag elements directly on poster or use sliders above</p>
+                  <p className="text-[9px] text-gray-400 text-center">💡 Drag elements directly on poster or use sliders above</p>
                 </div>
               )}
 
               {/* COLORS TAB */}
               {activeDesignTab === 'colors' && (
                 <div className="space-y-3">
-                  <p className="text-xs font-semibold text-purple-500 mb-2">ðŸŽ¨ Customize colors for each element</p>
+                  <p className="text-xs font-semibold text-purple-500 mb-2">🎨 Customize colors for each element</p>
                   
                   {/* Target selector */}
                   <div className="flex gap-1 mb-3">
-                    {([['all', 'All'], ['headline', 'ðŸ“ Headline'], ['subtitle', 'ðŸ’¬ Subtitle'], ['business', 'ðŸª Business']] as const).map(([key, label]) => (
+                    {([['all', 'All'], ['headline', '📍 Headline'], ['subtitle', 'ðŸ’¬ Subtitle'], ['business', '🏪 Business']] as const).map(([key, label]) => (
                       <button key={key} onClick={() => setColorTarget(key as any)}
                         className={`px-2 py-1.5 rounded-lg text-[10px] font-medium transition-all flex-1 ${colorTarget === key ? 'bg-purple-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}`}>
                         {label}
@@ -1455,7 +1455,7 @@ const CreativeGeneratorPage: React.FC = () => {
                     
                     {/* Headline */}
                     <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg p-2">
-                      <span className="text-[10px] text-gray-500 dark:text-gray-400 w-20">ðŸ“ Headline</span>
+                      <span className="text-[10px] text-gray-500 dark:text-gray-400 w-20">📍 Headline</span>
                       <input type="color" value={headlineColor} onChange={(e) => setHeadlineColor(e.target.value)}
                         className="w-8 h-8 rounded-lg cursor-pointer border-0" />
                       <span className="text-[9px] text-gray-400 font-mono">{headlineColor}</span>
@@ -1477,7 +1477,7 @@ const CreativeGeneratorPage: React.FC = () => {
                     
                     {/* Business Info */}
                     <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg p-2">
-                      <span className="text-[10px] text-gray-500 dark:text-gray-400 w-20">ðŸª Business</span>
+                      <span className="text-[10px] text-gray-500 dark:text-gray-400 w-20">🏪 Business</span>
                       <input type="color" value={businessColor} onChange={(e) => setBusinessColor(e.target.value)}
                         className="w-8 h-8 rounded-lg cursor-pointer border-0" />
                       <span className="text-[9px] text-gray-400 font-mono">{businessColor}</span>
@@ -1515,7 +1515,7 @@ const CreativeGeneratorPage: React.FC = () => {
                     className="w-full py-2 bg-gradient-to-r from-gray-400 to-gray-500 text-white rounded-lg text-xs font-medium hover:shadow-lg transition-all flex items-center justify-center gap-1.5">
                     <RefreshCw size={12} /> Reset All Colors
                   </button>
-                  <p className="text-[9px] text-gray-400 text-center">ðŸ’¡ Pick element first, then choose color â€” or use "All" to change everything</p>
+                  <p className="text-[9px] text-gray-400 text-center">💡 Pick element first, then choose color — or use "All" to change everything</p>
                 </div>
               )}
             </div>
@@ -1524,7 +1524,7 @@ const CreativeGeneratorPage: React.FC = () => {
       ) : (
         /* History View */
         <div className="modern-card rounded-2xl p-4 sm:p-5 md:p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">ðŸ“‚ Saved Posters</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">📍‚ Saved Posters</h3>
           {history.length === 0 ? (
             <div className="text-center py-12 text-gray-500 dark:text-gray-400">
               <Image size={48} className="mx-auto mb-4 opacity-30" />
@@ -1617,7 +1617,7 @@ const CreativeGeneratorPage: React.FC = () => {
       {fullscreenPreview && (
         <div className="fixed inset-0 z-[200] bg-black/95 flex flex-col items-center justify-center p-4" onClick={() => setFullscreenPreview(false)}>
           <div className="flex items-center justify-between w-full max-w-lg mb-4">
-            <h3 className="text-white font-bold text-lg">ðŸ“¸ Full Preview</h3>
+            <h3 className="text-white font-bold text-lg">📍 Full Preview</h3>
             <div className="flex items-center gap-2">
               <select value={downloadQuality} onChange={(e) => setDownloadQuality(e.target.value as any)} onClick={(e) => e.stopPropagation()}
                 className="px-3 py-1.5 bg-white/10 text-white rounded-lg text-sm border border-white/20">
@@ -1643,7 +1643,7 @@ const CreativeGeneratorPage: React.FC = () => {
               <div className="absolute inset-0 bg-black/25" />
               {showPremiumBadge && (
                 <div className="absolute top-3 right-3 z-20">
-                  <div className="px-2.5 py-1 bg-gradient-to-r from-yellow-400 to-amber-500 text-black text-[10px] font-bold rounded-full shadow-lg flex items-center gap-1">â­ PREMIUM</div>
+                  <div className="px-2.5 py-1 bg-gradient-to-r from-yellow-400 to-amber-500 text-black text-[10px] font-bold rounded-full shadow-lg flex items-center gap-1">⭐ PREMIUM</div>
                 </div>
               )}
               {stickers.map(s => (
@@ -1662,7 +1662,7 @@ const CreativeGeneratorPage: React.FC = () => {
                       <img src={productImage} alt={productName} className="w-full h-full object-cover" style={photoFilterStyle} />
                     </div>
                   ) : (
-                    <div className="text-4xl sm:text-5xl md:text-7xl drop-shadow-lg">{selectedTemplate?.emoji || 'ðŸŽ¨'}</div>
+                    <div className="text-4xl sm:text-5xl md:text-7xl drop-shadow-lg">{selectedTemplate?.emoji || '🎨'}</div>
                   )}
                   {productName && productImage && (
                     <p className="text-white/80 text-sm font-medium mt-1 text-center drop-shadow-md" style={{ fontFamily: FONT_OPTIONS[selectedFont].family }}>{productName}</p>

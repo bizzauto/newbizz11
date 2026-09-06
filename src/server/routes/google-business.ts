@@ -456,7 +456,8 @@ router.get('/auth/callback', async (req: AuthRequest, res: Response) => {
     // Handle both formats: direct data or wrapped in .data
     const tokenData = tokenResponse?.access_token ? tokenResponse : tokenResponse?.data;
     if (!tokenData?.access_token) {
-      console.error('[GBP] Token exchange returned no access_token:', JSON.stringify(tokenResponse)?.substring(0, 200));
+      // SECURITY: never stringify tokenResponse — partial logs can leak tokens.
+      console.error('[GBP] Token exchange returned no access_token. Keys present:', Object.keys(tokenData || tokenResponse || {}));
       throw new Error('Token exchange failed: no access_token in response');
     }
     console.log('[GBP] Token exchange OK — has access_token:', !!tokenData.access_token, 'has refresh_token:', !!tokenData.refresh_token, 'expires_in:', tokenData.expires_in);

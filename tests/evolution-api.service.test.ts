@@ -20,6 +20,8 @@ jest.mock('../src/server/db', () => ({
     message: {
       create: jest.fn(),
       updateMany: jest.fn(),
+      // Daily-cap anti-ban check (checkDailyLimit / bulkSend trim) reads count
+      count: jest.fn(),
     },
     contact: {
       findFirst: jest.fn(),
@@ -302,7 +304,10 @@ describe('EvolutionApiService', () => {
 
         const result = await EvolutionApiService.connectInstance(BUSINESS_ID);
 
-        expect(result).toEqual({
+        // Service returns extra pairing fields (qrCodeBase64/pairingCode/
+        // pairingUnsupported) added with pairing-code support — assert the
+        // QR contract via toMatchObject.
+        expect(result).toMatchObject({
           qrCode: 'qr-code-string',
           status: 'scanning',
         });

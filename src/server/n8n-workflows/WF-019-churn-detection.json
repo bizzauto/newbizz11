@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "Churn Detection",
   "nodes": [
     {
@@ -21,7 +21,7 @@
       "position": [470, 300],
       "parameters": {
         "method": "GET",
-        "url": "https://crm.bizzauto.app/api/customers/inactive",
+        "url": "https://bizzautoai.com/api/customers/inactive",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth"
       }
@@ -45,7 +45,7 @@
       "position": [910, 300],
       "parameters": {
         "method": "POST",
-        "url": "https://crm.bizzauto.app/api/notify/at-risk",
+        "url": "https://bizzautoai.com/api/notify/at-risk",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,

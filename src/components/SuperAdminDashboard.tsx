@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import {
   Building2, Users, MessageSquare, TrendingUp,
   ArrowUpRight, ArrowDownRight, Shield, DollarSign, RefreshCw,
@@ -13,6 +13,7 @@ import {
 } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import { superAdminAPI } from '../lib/api';
+import { useToast } from './Toast';
 import InfrastructureHealthTab from './InfrastructureHealthTab';
 import AuditLogTab from './AuditLogTab';
 import SubscriptionsTab from './SubscriptionsTab';
@@ -369,6 +370,7 @@ function BusinessesSubTab() {
 // ============================================================
 
 const SuperAdminDashboard: React.FC = () => {
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState<TabId>('dashboard');
   const [stats, setStats] = useState<PlatformStats | null>(null);
   const [growthData, setGrowthData] = useState<GrowthDataPoint[]>([]);
@@ -438,7 +440,7 @@ const SuperAdminDashboard: React.FC = () => {
   }, [stats]);
 
   const formatCurrency = (val: number) =>
-    val > 0 ? '₹' + val.toLocaleString('en-IN') : '₹0';
+    val > 0 ? 'â‚¹' + val.toLocaleString('en-IN') : 'â‚¹0';
 
   // Background handlers
   const fetchBackgrounds = useCallback(async () => {
@@ -457,7 +459,7 @@ const SuperAdminDashboard: React.FC = () => {
       setShowAddBg(false);
       setBgForm({ name: '', imageUrl: '', thumbnailUrl: '', category: 'general', scheduleType: 'manual', expiresAt: '' });
       fetchBackgrounds();
-    } catch { alert('Failed to add background'); }
+    } catch { toast.error('Failed to add background'); }
   };
 
   const handleDeleteBg = async (id: string) => {
@@ -465,14 +467,14 @@ const SuperAdminDashboard: React.FC = () => {
     try {
       await superAdminAPI.deleteBackground(id);
       fetchBackgrounds();
-    } catch { alert('Failed to delete'); }
+    } catch { toast.error('Failed to delete'); }
   };
 
   const handleToggleBg = async (bg: any) => {
     try {
       await superAdminAPI.updateBackground(bg.id, { isActive: !bg.isActive });
       fetchBackgrounds();
-    } catch { alert('Failed to update'); }
+    } catch { toast.error('Failed to update'); }
   };
 
   // Loading state
@@ -611,7 +613,7 @@ const SuperAdminDashboard: React.FC = () => {
                 <div className="bg-white rounded-lg shadow-sm p-4 sm:p-5 md:p-6 border border-gray-100">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                     <DollarSign size={20} className="text-green-600" />
-                    Monthly Revenue {growthData.length > 0 ? '(₹)' : '(No Data)'}
+                    Monthly Revenue {growthData.length > 0 ? '(â‚¹)' : '(No Data)'}
                   </h3>
                   {growthData.length > 0 ? (
                     <ResponsiveContainer width="100%" height={300}>
@@ -684,7 +686,7 @@ const SuperAdminDashboard: React.FC = () => {
                       <p className="text-xl sm:text-2xl font-bold text-purple-700">
                         {stats.activeSubscriptions > 0 && stats.totalRevenue > 0
                           ? formatCurrency(Math.round(stats.totalRevenue / stats.activeSubscriptions))
-                          : '₹0'}
+                          : 'â‚¹0'}
                       </p>
                     </div>
                     <div className="p-4 bg-yellow-50 rounded-lg">
@@ -814,7 +816,7 @@ const SuperAdminDashboard: React.FC = () => {
                   </div>
                   <div className="p-3">
                     <h3 className="text-sm font-semibold text-gray-900 truncate">{bg.name}</h3>
-                    <p className="text-[10px] text-gray-500 mt-0.5">{bg.category} · {bg.usageCount || 0} uses</p>
+                    <p className="text-[10px] text-gray-500 mt-0.5">{bg.category} Â· {bg.usageCount || 0} uses</p>
                     {bg.expiresAt && (
                       <p className="text-[10px] text-amber-500 mt-0.5 flex items-center gap-1">
                         <Calendar size={10} /> Expires {new Date(bg.expiresAt).toLocaleDateString()}

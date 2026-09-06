@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+﻿import React, { useState, useMemo, useEffect } from 'react';
 import {
   Search, Plus, Mail, Phone, Edit3, Trash2, UserPlus, DollarSign, Download,
   TrendingUp, Calendar, Clock, MessageSquare, FileText, Bell, CheckCircle, X, Activity, ArrowUp, ArrowDown,
@@ -1175,7 +1175,7 @@ export default function CRMPage() {
                         <span>·</span>
                         <span>{entry.date}</span>
                         {entry.paymentMethod && <><span>·</span><span className="capitalize">{entry.paymentMethod}</span></>}
-                        {entry.recurring && <><span>·</span><span className="text-blue-500">🔁 Recurring</span></>}
+                        {entry.recurring && <><span>·</span><span className="text-blue-500">🔄 Recurring</span></>}
                       </div>
                     </div>
                   </div>
@@ -1557,9 +1557,10 @@ const AddContactModal: React.FC<{ onClose: () => void; onAdd: (contact: any) => 
     name: '', phone: '', email: '', company: '', tags: '', stage: 'New Lead',
     dealValue: '', leadScore: 'warm', source: 'Direct', address: '', website: ''
   });
+  const [formError, setFormError] = useState('');
 
   const handleSubmit = () => {
-    if (!form.name || !form.phone) { alert('Name and phone are required'); return; }
+    if (!form.name || !form.phone) { setFormError('Name and phone are required'); return; }
     onAdd({
       ...form,
       tags: form.tags.split(',').map(t => t.trim()).filter(Boolean),
@@ -1570,6 +1571,7 @@ const AddContactModal: React.FC<{ onClose: () => void; onAdd: (contact: any) => 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
       <div className="bg-white dark:bg-gray-800 rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-lg max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+        {formError && <div className="px-5 pt-4"><p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg px-3 py-2">{formError}</p></div>}
         <div className="p-5 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between sticky top-0 bg-white dark:bg-gray-800 rounded-t-2xl">
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">Add New Contact</h2>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"><X size={20} /></button>
@@ -1592,7 +1594,7 @@ const AddContactModal: React.FC<{ onClose: () => void; onAdd: (contact: any) => 
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div><label className="block text-sm font-medium mb-1">Stage</label><select value={form.stage} onChange={e => setForm({ ...form, stage: e.target.value })} className="w-full px-3 py-2.5 border rounded-xl bg-white dark:bg-gray-700">{['New Lead','Contacted','Qualified','Proposal','Negotiation','Won','Lost'].map(s => <option key={s}>{s}</option>)}</select></div>
-            <div><label className="block text-sm font-medium mb-1">Lead Score</label><select value={form.leadScore} onChange={e => setForm({ ...form, leadScore: e.target.value })} className="w-full px-3 py-2.5 border rounded-xl bg-white dark:bg-gray-700"><option value="hot">🔥 Hot</option><option value="warm">🌡️ Warm</option><option value="cold">❄️ Cold</option></select></div>
+            <div><label className="block text-sm font-medium mb-1">Lead Score</label><select value={form.leadScore} onChange={e => setForm({ ...form, leadScore: e.target.value })} className="w-full px-3 py-2.5 border rounded-xl bg-white dark:bg-gray-700"><option value="hot">🔥 Hot</option><option value="warm">🌡️ Warm</option><option value="cold">â„️ Cold</option></select></div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div><label className="block text-sm font-medium mb-1">Deal Value (₹)</label><input type="number" value={form.dealValue} onChange={e => setForm({ ...form, dealValue: e.target.value })} className="w-full px-3 py-2.5 border rounded-xl bg-white dark:bg-gray-700" /></div>
@@ -1616,9 +1618,10 @@ const AddContactModal: React.FC<{ onClose: () => void; onAdd: (contact: any) => 
 
 const AddDealModal: React.FC<{ contacts: any[]; onClose: () => void; onAdd: (deal: any) => void }> = ({ contacts, onClose, onAdd }) => {
   const [form, setForm] = useState({ contactId: '', title: '', value: '', stage: 'Qualified', probability: 50, expectedClose: '', notes: '' });
+  const [formError, setFormError] = useState('');
 
   const handleSubmit = () => {
-    if (!form.title || !form.value) { alert('Title and value are required'); return; }
+    if (!form.title || !form.value) { setFormError('Title and value are required'); return; }
     const contact = contacts.find(c => c.id === form.contactId);
     onAdd({
       contactId: form.contactId,
@@ -1639,6 +1642,7 @@ const AddDealModal: React.FC<{ contacts: any[]; onClose: () => void; onAdd: (dea
           <h2 className="text-lg font-bold">New Deal</h2>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg"><X size={20} /></button>
         </div>
+        {formError && <div className="px-4 pt-3"><p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg px-3 py-2">{formError}</p></div>}
         <div className="p-4 space-y-4">
           <div><label className="text-sm font-medium mb-1 block">Deal Title *</label><input type="text" value={form.title} onChange={e => setForm({...form, title: e.target.value})} className="w-full px-3 py-2.5 border rounded-xl" /></div>
           <div><label className="text-sm font-medium mb-1 block">Contact</label><select value={form.contactId} onChange={e => setForm({...form, contactId: e.target.value})} className="w-full px-3 py-2.5 border rounded-xl"><option value="">Select contact</option>{contacts.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
@@ -1667,6 +1671,7 @@ const AddDealModal: React.FC<{ contacts: any[]; onClose: () => void; onAdd: (dea
 
 const InvoiceModal: React.FC<{ contacts: any[]; onClose: () => void; onCreate: (invoice: any) => void }> = ({ contacts, onClose, onCreate }) => {
   const [form, setForm] = useState({ customerId: '', items: [{ description: '', quantity: 1, rate: 0 }], taxRate: 18, notes: '' });
+  const [formError, setFormError] = useState('');
   const selectedContact = contacts.find(c => c.id === form.customerId);
   const subtotal = form.items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
   const tax = (subtotal * form.taxRate) / 100;
@@ -1686,6 +1691,7 @@ const InvoiceModal: React.FC<{ contacts: any[]; onClose: () => void; onCreate: (
           <h2 className="text-lg font-bold">Create Invoice</h2>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg"><X size={20} /></button>
         </div>
+        {formError && <div className="px-5 pt-4"><p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg px-3 py-2">{formError}</p></div>}
         <div className="p-5 space-y-4">
           <div><label className="text-sm font-medium mb-1 block">Customer</label><select value={form.customerId} onChange={e => setForm({ ...form, customerId: e.target.value })} className="w-full px-3 py-2.5 border rounded-xl"><option value="">Select Customer</option>{contacts.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
           <div>
@@ -1713,13 +1719,14 @@ const InvoiceModal: React.FC<{ contacts: any[]; onClose: () => void; onCreate: (
           <button onClick={onClose} className="flex-1 py-2.5 border rounded-xl hover:bg-gray-50 text-sm">Cancel</button>
           <button onClick={() => {
             if (!selectedContact) {
-              alert('Please select a contact first');
+              setFormError('Please select a contact first');
               return;
             }
             if (form.items.length === 0) {
-              alert('Please add at least one item');
+              setFormError('Please add at least one item');
               return;
             }
+            setFormError('');
             onCreate({
               customerName: selectedContact.name,
               customerEmail: selectedContact.email,
@@ -1741,9 +1748,10 @@ const InvoiceModal: React.FC<{ contacts: any[]; onClose: () => void; onCreate: (
 
 const AppointmentModal: React.FC<{ contacts: any[]; onClose: () => void; onCreate: (apt: any) => void }> = ({ contacts, onClose, onCreate }) => {
   const [form, setForm] = useState({ clientId: '', title: '', service: '', date: '', time: '', duration: 30, reminder: true, location: '', staff: '' });
+  const [formError, setFormError] = useState('');
 
   const handleCreate = () => {
-    if (!form.title || !form.date || !form.time) { alert('Title, date, and time are required'); return; }
+    if (!form.title || !form.date || !form.time) { setFormError('Title, date, and time are required'); return; }
     const contact = contacts.find(c => c.id === form.clientId);
     onCreate({
       title: form.title, clientName: contact?.name || 'Walk-in', clientPhone: contact?.phone || '',
@@ -1759,6 +1767,7 @@ const AppointmentModal: React.FC<{ contacts: any[]; onClose: () => void; onCreat
           <h2 className="text-lg font-bold">Book Appointment</h2>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg"><X size={20} /></button>
         </div>
+        {formError && <div className="px-4 pt-3"><p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg px-3 py-2">{formError}</p></div>}
         <div className="p-4 space-y-4">
           <div><label className="text-sm font-medium mb-1 block">Client</label><select value={form.clientId} onChange={e => setForm({...form, clientId: e.target.value})} className="w-full px-3 py-2.5 border rounded-xl"><option value="">Walk-in (No contact)</option>{contacts.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
           <div><label className="text-sm font-medium mb-1 block">Title *</label><input type="text" value={form.title} onChange={e => setForm({...form, title: e.target.value})} placeholder="Product Demo" className="w-full px-3 py-2.5 border rounded-xl" /></div>
@@ -1789,6 +1798,7 @@ const AppointmentModal: React.FC<{ contacts: any[]; onClose: () => void; onCreat
 
 const GoalModal: React.FC<{ onClose: () => void; onAdd: (goal: any) => void }> = ({ onClose, onAdd }) => {
   const [form, setForm] = useState({ title: '', type: 'revenue', target: '', current: '0', period: 'monthly' });
+  const [formError, setFormError] = useState('');
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
@@ -1797,6 +1807,7 @@ const GoalModal: React.FC<{ onClose: () => void; onAdd: (goal: any) => void }> =
           <h2 className="text-lg font-bold">New Goal</h2>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg"><X size={20} /></button>
         </div>
+        {formError && <div className="px-4 pt-3"><p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg px-3 py-2">{formError}</p></div>}
         <div className="p-4 space-y-4">
           <div><label className="text-sm font-medium mb-1 block">Goal Title</label><input type="text" value={form.title} onChange={e => setForm({...form, title: e.target.value})} placeholder="Monthly Revenue Target" className="w-full px-3 py-2.5 border rounded-xl" /></div>
           <div className="grid grid-cols-2 gap-3">
@@ -1811,7 +1822,7 @@ const GoalModal: React.FC<{ onClose: () => void; onAdd: (goal: any) => void }> =
         <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex gap-3">
           <button onClick={onClose} className="flex-1 py-2.5 border rounded-xl hover:bg-gray-50 text-sm">Cancel</button>
           <button onClick={() => {
-            if (!form.title || !form.target) { alert('Title and target are required'); return; }
+            if (!form.title || !form.target) { setFormError('Title and target are required'); return; }
             onAdd({
               title: form.title, type: form.type, target: parseInt(form.target),
               current: parseInt(form.current) || 0, period: form.period,

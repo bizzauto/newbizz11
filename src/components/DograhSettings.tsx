@@ -29,8 +29,8 @@ interface Agent {
 }
 
 const PROVIDER_INFO: Record<string, { name: string; rate: string; color: string; description: string }> = {
-  twilio: { name: 'Twilio', rate: '~â‚¹1.00-1.50/min', color: 'red', description: 'Industry leader, global reach, reliable' },
-  plivo: { name: 'Plivo', rate: '~â‚¹0.50-1.00/min', color: 'green', description: '50% cheaper than Twilio, great quality' },
+  twilio: { name: 'Twilio', rate: '~₹1.00-1.50/min', color: 'red', description: 'Industry leader, global reach, reliable' },
+  plivo: { name: 'Plivo', rate: '~₹0.50-1.00/min', color: 'green', description: '50% cheaper than Twilio, great quality' },
   browser_only: { name: 'Browser Only', rate: 'FREE', color: 'blue', description: 'No phone number needed, WebRTC calls' },
 };
 
@@ -315,7 +315,7 @@ const DograhSettings: React.FC = () => {
                     Generate
                   </button>
                 </div>
-                {/* Webhook URL â€” MUST be configured in the Dograh dashboard or
+                {/* Webhook URL — MUST be configured in the Dograh dashboard or
                     calls never complete (no transcript/duration/wallet sync). */}
                 <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
                   <p className="text-xs font-semibold text-amber-700 dark:text-amber-300 mb-1">
@@ -342,10 +342,10 @@ const DograhSettings: React.FC = () => {
                 </div>
               </div>
 
-              {/* Agent UUID â€” production API Trigger path */}
+              {/* Agent UUID — production API Trigger path */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Agent UUID (production calls ke liye â€” recommended)
+                  Agent UUID (production calls ke liye — recommended)
                 </label>
                 <input
                   type="text"
@@ -355,7 +355,7 @@ const DograhSettings: React.FC = () => {
                   className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none font-mono text-sm"
                 />
                 <p className="text-[11px] text-gray-400 mt-1">
-                  Dograh â†’ workflow kholo â†’ <strong>API Trigger node</strong> â†’ Production URL copy karo â†’ URL ke aakhri hisse mein jo UUID hai wo yahan paste karo. Bina UUID ke sirf legacy test-call chalega.
+                  Dograh → workflow kholo → <strong>API Trigger node</strong> → Production URL copy karo → URL ke aakhri hisse mein jo UUID hai wo yahan paste karo. Bina UUID ke sirf legacy test-call chalega.
                 </p>
               </div>
 
@@ -363,7 +363,7 @@ const DograhSettings: React.FC = () => {
               {agents.length > 0 && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Default Agent (legacy numeric â€” optional jab UUID set ho)
+                    Default Agent (legacy numeric — optional jab UUID set ho)
                   </label>
                   <select
                     value={settings.dograhDefaultAgentId || ''}

@@ -276,7 +276,13 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
   const handleSearchSelect = (id: string) => {
     setSearchQuery('');
     setShowSearchResults(false);
-    navigate(id);
+    // External links (e.g. BillInvoice) must open in a new tab — navigate()
+    // would resolve them as relative internal paths (/crm/https:/... → 404).
+    if (id.startsWith('http')) {
+      window.open(id, '_blank', 'noopener,noreferrer');
+    } else {
+      navigate(id);
+    }
   };
 
   // Close search dropdown on outside click
@@ -293,6 +299,9 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
   const handleBottomNavClick = (id: string) => {
     if (id === '/more') {
       setShowMobileMenu(!showMobileMenu);
+    } else if (id.startsWith('http')) {
+      // Defensive: never route external URLs through navigate()
+      window.open(id, '_blank', 'noopener,noreferrer');
     } else {
       navigate(id);
     }

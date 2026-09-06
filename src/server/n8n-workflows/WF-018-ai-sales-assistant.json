@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "AI Sales Assistant",
   "nodes": [
     {
@@ -22,7 +22,7 @@
       "position": [470, 300],
       "parameters": {
         "method": "GET",
-        "url": "https://crm.bizzauto.app/api/crm/context",
+        "url": "https://bizzautoai.com/api/crm/context",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth"
       }

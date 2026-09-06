@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "Deal Stage Change",
   "nodes": [
     {
@@ -65,7 +65,7 @@
       "position": [690, 400],
       "parameters": {
         "method": "POST",
-        "url": "https://crm.bizzauto.app/api/activities",
+        "url": "https://bizzautoai.com/api/activities",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
@@ -81,7 +81,7 @@
       "position": [910, 300],
       "parameters": {
         "method": "POST",
-        "url": "https://crm.bizzauto.app/api/ai/generate-proposal",
+        "url": "https://bizzautoai.com/api/ai/generate-proposal",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,

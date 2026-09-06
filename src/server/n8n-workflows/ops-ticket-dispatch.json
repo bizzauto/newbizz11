@@ -1,5 +1,5 @@
-{
-  "name": "Ops — Ticket Dispatch",
+﻿{
+  "name": "Ops â€” Ticket Dispatch",
   "nodes": [
     {
       "id": "1",
@@ -18,7 +18,7 @@
       "position": [480, 300],
       "parameters": {
         "method": "POST",
-        "url": "https://crm.bizzauto.app/api/tickets",
+        "url": "https://bizzautoai.com/api/tickets",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true, "specifyBody": "json",
@@ -33,7 +33,7 @@
       "position": [710, 300],
       "parameters": {
         "method": "POST",
-        "url": "https://crm.bizzauto.app/api/tickets/assign-oncall",
+        "url": "https://bizzautoai.com/api/tickets/assign-oncall",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true, "specifyBody": "json",
@@ -48,7 +48,7 @@
       "position": [940, 300],
       "parameters": {
         "method": "POST",
-        "url": "https://crm.bizzauto.app/api/whatsapp/send",
+        "url": "https://bizzautoai.com/api/whatsapp/send",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true, "specifyBody": "json",

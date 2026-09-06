@@ -194,7 +194,8 @@ router.get('/google/callback', async (req: Request, res: Response) => {
     }
 
     if (!tokenData.id_token) {
-      console.error('Google token exchange returned no id_token:', tokenData);
+      // SECURITY: never log tokenData — it contains live access/refresh/id tokens.
+      console.error('Google token exchange returned no id_token. Keys present:', Object.keys(tokenData || {}));
       return res.redirect(`${frontendUrl}/login?error=token_exchange_failed`);
     }
 

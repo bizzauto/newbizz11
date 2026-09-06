@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "Payment Handler",
   "nodes": [
     {
@@ -22,7 +22,7 @@
       "position": [470, 300],
       "parameters": {
         "method": "POST",
-        "url": "https://crm.bizzauto.app/api/payments/verify",
+        "url": "https://bizzautoai.com/api/payments/verify",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
@@ -38,7 +38,7 @@
       "position": [690, 300],
       "parameters": {
         "method": "POST",
-        "url": "https://crm.bizzauto.app/api/subscriptions/update",
+        "url": "https://bizzautoai.com/api/subscriptions/update",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,

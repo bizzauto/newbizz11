@@ -28,15 +28,52 @@ jobs:
       - name: Generate Prisma client
         run: npx prisma generate
 
-      - name: TypeScript type check
-        run: npx tsc --noEmit --project tsconfig.server.json 2>&1 || npx tsc --noEmit --project tsconfig.server.json 2>&1 || echo "⚠️ TypeScript warnings (non-blocking)"
+      # HARD GATE (P0-3): was "|| echo non-blocking" — type errors could reach
+      # production. Full typecheck (client + server) now fails the workflow.
+      - name: TypeScript type check (client + server)
+        run: npm run typecheck
 
       - name: Frontend build check
         run: npx vite build 2>&1 | tail -5
 
+  regression-gate:
+    name: Guardian Regression Gate
+    runs-on: ubuntu-latest
+    needs: test
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      # P0-4: baseline-delta regression gate. Blocks deploy when new test
+      # failures appear vs the committed baseline (qa/evidence/last-good-regression.json).
+      # First run without a baseline establishes it (exit 0) and the artifact
+      # must be committed in the same PR to lock the gate.
+      - name: Run regression gate
+        run: node scripts/guardian/regression-guardian.cjs
+
+      - name: Upload gate evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-gate-evidence
+          path: qa/evidence/last-good-regression.json
+          if-no-files-found: ignore
+
   deploy:
     name: Deploy to Coolify
-    needs: test
+    needs: [test, regression-gate]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:

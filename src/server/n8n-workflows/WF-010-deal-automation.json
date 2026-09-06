@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "Deal Stage Automation",
   "nodes": [
     {
@@ -38,7 +38,7 @@
       "position": [690, 300],
       "parameters": {
         "method": "POST",
-        "url": "https://crm.bizzauto.app/api/notifications/deal",
+        "url": "https://bizzautoai.com/api/notifications/deal",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,

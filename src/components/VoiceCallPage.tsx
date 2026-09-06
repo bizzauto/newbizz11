@@ -1,3 +1,4 @@
+﻿import { useToast } from './Toast';
 import React, { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import {
   Phone, PhoneCall, PhoneOff, Mic, MicOff, Volume2,
@@ -39,6 +40,7 @@ const typeConfig: Record<string, { icon: React.ReactNode; color: string; bg: str
 };
 
 const VoiceCallPage: React.FC = () => {
+  const toast = useToast();
   const [calls, setCalls] = useState<CallRecord[]>([]);
   const [callStats, setCallStats] = useState<any[]>([]);
   const [stats, setStats] = useState({ total: 0, incoming: 0, outgoing: 0, missed: 0, avgDuration: 0 });
@@ -146,7 +148,7 @@ const VoiceCallPage: React.FC = () => {
   const startCall = async () => {
     if (!dialNumber && callType === 'phone') return;
     if (walletBalance < 5) {
-      alert('Insufficient wallet balance. Please add funds first.');
+      toast.error('Insufficient wallet balance. Please add funds first.');
       return;
     }
 
@@ -178,7 +180,7 @@ const VoiceCallPage: React.FC = () => {
         loadData();
       }
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Failed to start call');
+      toast.error(err.response?.data?.error || 'Failed to start call');
     } finally {
       setDialing(false);
     }
@@ -208,7 +210,7 @@ const VoiceCallPage: React.FC = () => {
         }, 3000);
       }
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Browser calling requires Dograh WebRTC widget configuration.');
+      toast.error(err.response?.data?.error || 'Browser calling requires Dograh WebRTC widget configuration.');
     } finally {
       setDialing(false);
     }
@@ -567,7 +569,7 @@ const JimiCallAssistant: React.FC<JimiCallAssistantProps> = ({ onCallRequest, co
   const [isListening, setIsListening] = useState(false);
   const [message, setMessage] = useState('');
   const [chat, setChat] = useState<{ text: string; isUser: boolean }[]>([
-    { text: 'Namaste! Main Jimi hun, aapki voice call assistant! 🎧\n\nBolo kya karna hai:\n• "Call karo Rahul ko"\n• "Contact list dikhao"\n• "Save karo Amit 7972888023"', isUser: false }
+    { text: 'Namaste! Main Jimi hun, aapki voice call assistant! ðŸ§\n\nBolo kya karna hai:\n• "Call karo Rahul ko"\n• "Contact list dikhao"\n• "Save karo Amit 7972888023"', isUser: false }
   ]);
   const recognitionRef = useRef<any>(null);
 
@@ -614,13 +616,13 @@ const JimiCallAssistant: React.FC<JimiCallAssistantProps> = ({ onCallRequest, co
           searchName.includes(c.name.toLowerCase())
         );
         if (contact) {
-          addMessage(`📞 ${contact.name} ko call kar rahi hun!\nNumber: ${contact.phone}`, false);
+          addMessage(`📍 ${contact.name} ko call kar rahi hun!\nNumber: ${contact.phone}`, false);
           onCallRequest(contact.phone, contact.name);
         } else {
-          addMessage(`🤔 "${searchName}" ka number nahi mila.\nSave karo: "Save karo ${searchName} [number]"`, false);
+          addMessage(`ðŸ¤” "${searchName}" ka number nahi mila.\nSave karo: "Save karo ${searchName} [number]"`, false);
         }
       } else {
-        addMessage('📞 Bolo kaunsa contact call karna hai?\nExample: "Call karo Rahul ko"', false);
+        addMessage('📍 Bolo kaunsa contact call karna hai?\nExample: "Call karo Rahul ko"', false);
       }
     }
     // Save number
@@ -631,25 +633,25 @@ const JimiCallAssistant: React.FC<JimiCallAssistantProps> = ({ onCallRequest, co
         const number = match[2];
         addMessage(`✅ Save ho gaya!\n${name}: ${number}\nAb "Call karo ${name} ko" bolo!`, false);
       } else {
-        addMessage('📝 Number save karne ke liye:\n"Save karo Rahul 7972888023"', false);
+        addMessage('📍 Number save karne ke liye:\n"Save karo Rahul 7972888023"', false);
       }
     }
     // Contact list
     else if (lower.includes('contact') || lower.includes('list') || lower.includes('contacts')) {
       if (contacts.length > 0) {
         const list = contacts.slice(0, 5).map((c, i) => `${i + 1}. ${c.name} - ${c.phone}`).join('\n');
-        addMessage(`📋 Recent Contacts:\n${list}\n\nCall karne ke liye bolo: "Call karo [name] ko"`, false);
+        addMessage(`📍 Recent Contacts:\n${list}\n\nCall karne ke liye bolo: "Call karo [name] ko"`, false);
       } else {
-        addMessage('📋 Abhi koi contacts nahi hain!', false);
+        addMessage('📍 Abhi koi contacts nahi hain!', false);
       }
     }
     // Help
     else if (lower.includes('help')) {
-      addMessage('🎧 Jimi Call Assistant Commands:\n\n• "Call karo Rahul ko" - Contact ko call karo\n• "Save karo Amit 7972888023" - Number save karo\n• "Contact list dikhao" - Contacts dekho\n• "Call history dikhao" - Recent calls', false);
+      addMessage('ðŸ§ Jimi Call Assistant Commands:\n\n• "Call karo Rahul ko" - Contact ko call karo\n• "Save karo Amit 7972888023" - Number save karo\n• "Contact list dikhao" - Contacts dekho\n• "Call history dikhao" - Recent calls', false);
     }
     // Unknown
     else {
-      addMessage('🤔 Samajh nahi aaya. "Help" bolo commands sunne ke liye!', false);
+      addMessage('ðŸ¤” Samajh nahi aaya. "Help" bolo commands sunne ke liye!', false);
     }
   };
 
@@ -678,10 +680,10 @@ const JimiCallAssistant: React.FC<JimiCallAssistantProps> = ({ onCallRequest, co
         <div className="fixed bottom-36 right-6 z-50 w-80 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
           <div className="bg-gradient-to-r from-pink-500 to-purple-600 px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-xl">👩</span>
+              <span className="text-xl">👌©</span>
               <div>
                 <p className="text-white font-semibold text-sm">Jimi - Call Assistant</p>
-                <p className="text-white/70 text-xs">{isListening ? '🎤 Listening...' : 'Ready to help'}</p>
+                <p className="text-white/70 text-xs">{isListening ? 'ðŸ¤ Listening...' : 'Ready to help'}</p>
               </div>
             </div>
           </div>

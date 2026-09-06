@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "Social Publishing",
   "nodes": [
     {
@@ -37,7 +37,7 @@
       "position": [690, 300],
       "parameters": {
         "method": "POST",
-        "url": "https://crm.bizzauto.app/api/social/post",
+        "url": "https://bizzautoai.com/api/social/post",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,

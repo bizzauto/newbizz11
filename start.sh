@@ -70,13 +70,12 @@ if echo "$output" | grep -q "P3005"; then
   npx prisma migrate resolve --applied 20260624_init 2>&1 || true
 fi
 
-# CRITICAL: Sync schema to database. `migrate deploy` only applies NEW migrations,
-# but if the migration history is out of sync (table recorded as applied but never
-# created), it will skip forever and queries fail with "relation does not exist".
-# `db push` reconciles the actual database state with schema.prisma, creating any
-# missing tables (e.g. AuditLog). This is idempotent and safe to run on every boot.
-echo "Syncing database schema (db push) to ensure all tables exist..."
-timeout 120 npx prisma db push --skip-generate --accept-data-loss 2>&1 || echo "Warning: prisma db push failed, continuing..."
+# Sync additive schema drift (missing tables/columns) WITHOUT data loss.
+# NOTE: no --accept-data-loss. If the DB has destructive drift (dropped columns
+# etc.), db push REFUSES and logs the diff instead of silently deleting data.
+# Remediation: create a real migration (`npx prisma migrate dev`) and redeploy.
+echo "Syncing database schema (db push, non-destructive)..."
+timeout 120 npx prisma db push --skip-generate 2>&1 || echo "⚠️ db push refused (destructive drift?) — see diff above. Schema may be out of sync."
 
 echo "Starting server..."
 exec node dist/server/index.js

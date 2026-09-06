@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "AI Cost Controller",
   "nodes": [
     {
@@ -21,7 +21,7 @@
       "position": [470, 300],
       "parameters": {
         "method": "GET",
-        "url": "https://crm.bizzauto.app/api/ai/usage",
+        "url": "https://bizzautoai.com/api/ai/usage",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth"
       }
@@ -49,7 +49,7 @@
       "position": [910, 200],
       "parameters": {
         "method": "POST",
-        "url": "https://crm.bizzauto.app/api/notify",
+        "url": "https://bizzautoai.com/api/notify",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,

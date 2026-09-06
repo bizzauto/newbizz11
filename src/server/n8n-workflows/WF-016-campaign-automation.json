@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "Campaign Automation",
   "nodes": [
     {
@@ -21,7 +21,7 @@
       "position": [470, 300],
       "parameters": {
         "method": "GET",
-        "url": "https://crm.bizzauto.app/api/audience/campaign",
+        "url": "https://bizzautoai.com/api/audience/campaign",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth"
       }
@@ -34,7 +34,7 @@
       "position": [690, 300],
       "parameters": {
         "method": "POST",
-        "url": "https://crm.bizzauto.app/api/campaign/send",
+        "url": "https://bizzautoai.com/api/campaign/send",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,

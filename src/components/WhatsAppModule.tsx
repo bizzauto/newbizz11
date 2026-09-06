@@ -12,6 +12,7 @@ import {
   AlertCircle, CheckCircle, VolumeX
 , Loader, Server} from 'lucide-react';
 import apiClient, { whatsappAPI, messageTemplateAPI } from '../lib/api';
+import { useAuthStore } from '../lib/authStore';
 import { useIsMobile } from '../hooks/useViewport';
 import { useToast } from './Toast';
 import ClaudeWhatsAppSettings from './ClaudeWhatsAppSettings';
@@ -97,8 +98,31 @@ async function fetchTemplates(): Promise<WATemplate[]> {
   try {
     const res = await whatsappAPI.getTemplates();
     const data = res.data?.data || res.data?.templates || [];
-    return Array.isArray(data) ? data : [];
-  } catch { return []; }
+    if (!Array.isArray(data)) return [];
+    // Meta Cloud API returns { name, status: 'APPROVED', components: [...] } —
+    // normalize into the WATemplate shape the UI expects.
+    return data.map((t: any) => {
+      const components: any[] = Array.isArray(t.components) ? t.components : [];
+      const body = components.find((c) => c?.type === 'BODY');
+      const footerComp = components.find((c) => c?.type === 'FOOTER');
+      const buttonsComp = components.find((c) => c?.type === 'BUTTONS');
+      const bodyText: string = body?.text || '';
+      return {
+        id: t.id,
+        name: t.name,
+        category: t.category || 'MARKETING',
+        language: typeof t.language === 'string' ? t.language : t.language?.code || 'en',
+        status: (t.status || 'PENDING').toLowerCase() as WATemplate['status'],
+        content: bodyText,
+        variables: (bodyText.match(/\{\{\s*\d+\s*\}\}/g) || []) as unknown as string[],
+        buttons: buttonsComp?.buttons,
+        footer: footerComp?.text,
+      } as WATemplate;
+    });
+  } catch (err) {
+    console.error('Fetch WhatsApp templates failed:', err);
+    return [];
+  }
 }
 
 async function fetchAutoReplies(): Promise<AutoReplyRule[]> {
@@ -256,7 +280,7 @@ const QRConnectView: React.FC<{
               <div className="text-left">
                 <p className="font-semibold text-gray-900 dark:text-white">{connectedPhone}</p>
                 <p className="text-sm text-green-600 dark:text-green-400 flex items-center gap-1">
-                  <Wifi size={14} /> Connected ï¿½ Active
+                  <Wifi size={14} /> Connected  Active
                 </p>
               </div>
             </div>
@@ -317,7 +341,7 @@ const QRConnectView: React.FC<{
           <p className="text-gray-600 dark:text-gray-300">Link your WhatsApp Business account to start messaging</p>
         </div>
 
-        {/* Connection Mode Selector ï¿½ sticky so it is always reachable on mobile */}
+        {/* Connection Mode Selector  sticky so it is always reachable on mobile */}
         <div className="sticky top-0 z-20 -mx-6 sm:-mx-10 px-6 sm:px-10 pt-6 sm:pt-10 pb-3 bg-white dark:bg-gray-800 mb-3 rounded-t-2xl">
           <div className="flex justify-center">
             <div className="inline-flex bg-gray-100 dark:bg-gray-700 rounded-xl p-1">
@@ -439,7 +463,7 @@ const QRConnectView: React.FC<{
                   <div className="space-y-4">
                     {connectionStatus === 'scanning' || connectionStatus === 'connecting' ? (
                       pairingCode ? (
-                        /* MOBILE PAIRING CODE ï¿½ a phone cannot scan its own QR */
+                        /* MOBILE PAIRING CODE  a phone cannot scan its own QR */
                         <div className="text-center space-y-4">
                           <p className="text-sm font-semibold text-purple-800 dark:text-purple-300">
                             Type this code in WhatsApp
@@ -462,7 +486,7 @@ const QRConnectView: React.FC<{
                           )}
                           <div className="max-w-xs mx-auto space-y-1.5">
                             <p className="text-[11px] text-gray-500 dark:text-gray-400">
-                              WhatsApp says "check phone number"? The code is tied to the number above ï¿½ correct it and get a new code:
+                              WhatsApp says "check phone number"? The code is tied to the number above  correct it and get a new code:
                             </p>
                             <div className="flex items-center gap-2">
                               <input
@@ -516,7 +540,7 @@ const QRConnectView: React.FC<{
                             </p>
                             <p className="text-xs text-gray-400 mt-1">
                               {isMobileDevice
-                                ? 'You cannot scan your own screen ï¿½ add your number below to get a pairing code'
+                                ? 'You cannot scan your own screen  add your number below to get a pairing code'
                                 : 'Open WhatsApp > Linked Devices > Link a Device'}
                             </p>
                           </div>
@@ -552,7 +576,7 @@ const QRConnectView: React.FC<{
                         </div>
                       )
                     ) : needsPairingPhone ? (
-                      /* MOBILE: no configured number ï¿½ ask for it so pairing code works */
+                      /* MOBILE: no configured number  ask for it so pairing code works */
                       <div className="text-center space-y-3">
                         <p className="text-sm text-gray-700 dark:text-gray-200">
                           A phone cannot scan its own QR. Enter your WhatsApp number to get a pairing code:
@@ -616,7 +640,7 @@ const QRConnectView: React.FC<{
                 <div className="mt-6 p-4 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl text-left">
                   <p className="text-sm font-medium text-purple-800 dark:text-purple-300 mb-2">What is Evolution API?</p>
                   <p className="text-xs text-purple-600 dark:text-purple-400">
-                    Evolution API is an open-source WhatsApp Web API that lets you connect via QR code scanning ï¿½ no Meta Business approval needed. Perfect for small businesses and quick setup.
+                    Evolution API is an open-source WhatsApp Web API that lets you connect via QR code scanning  no Meta Business approval needed. Perfect for small businesses and quick setup.
                   </p>
                 </div>
               </div>
@@ -666,7 +690,7 @@ const QRConnectView: React.FC<{
                       placeholder="919876543210"
                       className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm"
                     />
-                    <p className="text-xs text-gray-400 mt-1">Required. Your WhatsApp number with country code (e.g., 919876543210) â€” the pairing code is tied to this number</p>
+                    <p className="text-xs text-gray-400 mt-1">Required. Your WhatsApp number with country code (e.g., 919876543210) — the pairing code is tied to this number</p>
                   </div>
                   <button
                     onClick={() => { onEvolutionConfigChange({ ...evolutionConfig, configured: true }); setShowEvolutionForm(false); }}
@@ -695,6 +719,7 @@ const ChatView: React.FC<{
   evolutionInstanceName?: string;
   isConnected?: boolean;
 }> = ({ contacts, onSendMessage, onNavigate, evolutionInstanceName = '', isConnected = false }) => {
+  const toast = useToast();
   const [selectedContact, setSelectedContact] = useState<WAContact | null>(null);
   const [message, setMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -812,7 +837,7 @@ const ChatView: React.FC<{
     e.target.value = ''; // allow re-picking the same file
     if (!file || !selectedContact) return;
     if (!isConnected || !evolutionInstanceName) {
-      alert('WhatsApp connected nahi hai â€” pehle connect karo.');
+      toast.error('WhatsApp connected nahi hai — pehle connect karo.');
       return;
     }
 
@@ -834,13 +859,13 @@ const ChatView: React.FC<{
     setMessage('');
 
     try {
-      // 1. Upload via existing /api/upload (category: general â€” 10MB, mp4/jpg/png/webp/gif/pdf allowed)
+      // 1. Upload via existing /api/upload (category: general — 10MB, mp4/jpg/png/webp/gif/pdf allowed)
       const form = new FormData();
       form.append('file', file);
       form.append('category', 'general');
       const upRes = await apiClient.post('/upload', form, { headers: { 'Content-Type': 'multipart/form-data' } });
       const fileUrl: string = upRes?.data?.data?.files?.[0]?.url || upRes?.data?.data?.url || upRes?.data?.url || '';
-      if (!fileUrl) throw new Error('Upload failed â€” no URL returned');
+      if (!fileUrl) throw new Error('Upload failed — no URL returned');
 
       // 2. Absolute URL for WhatsApp servers (they fetch the link)
       const absUrl = fileUrl.startsWith('http') ? fileUrl : `${window.location.origin}${fileUrl}`;
@@ -856,7 +881,7 @@ const ChatView: React.FC<{
       setMessages(prev => prev.map(m => m.id === newMsg.id ? { ...m, status: 'sent', mediaUrl: absUrl } : m));
     } catch (err: any) {
       const detail = err?.response?.data?.error || err?.message || 'Media send failed';
-      alert(`Media send failed: ${detail}`);
+      toast.error(`Media send failed: ${detail}`);
       setMessages(prev => prev.map(m => m.id === newMsg.id ? { ...m, status: 'failed' } : m));
     } finally {
       setUploadingMedia(false);
@@ -889,6 +914,12 @@ const ChatView: React.FC<{
 
   const handleSendTemplate = async (template: WATemplate) => {
     if (!selectedContact) return;
+    // Business context for template variable substitution (white-label safe —
+    // falls back to generic values when the store is empty).
+    const biz = useAuthStore.getState().business;
+    const bizName = biz?.name || 'Our Team';
+    const bizWebsite = biz?.website || '';
+    const bizPhone = biz?.phone || '';
     try {
       await whatsappAPI.sendTemplate({
         phone: selectedContact.phone.replace(/\s/g, ''),
@@ -896,7 +927,7 @@ const ChatView: React.FC<{
       });
       const newMsg: WAMessage = {
         id: `tmpl-${Date.now()}`,
-        content: template.content.replace(/\{\{1\}\}/g, selectedContact.name || 'Customer').replace(/\{\{2\}\}/g, 'BizzAuto Solutions').replace(/\{\{3\}\}/g, 'https://www.bizzautoai.com').replace(/\{\{4\}\}/g, '+91 8983027975'),
+        content: template.content.replace(/\{\{1\}\}/g, selectedContact.name || 'Customer').replace(/\{\{2\}\}/g, bizName).replace(/\{\{3\}\}/g, bizWebsite).replace(/\{\{4\}\}/g, bizPhone),
         timestamp: new Date().toISOString(),
         time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true }),
         direction: 'outbound',
@@ -971,7 +1002,7 @@ const ChatView: React.FC<{
                 type="tel"
                 value={newChatPhone}
                 onChange={(e) => setNewChatPhone(e.target.value)}
-                placeholder="+91 8983027975"
+                placeholder="+91 98765 43210"
                 className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
               <button
@@ -1365,9 +1396,9 @@ const ChatView: React.FC<{
                                 source: 'whatsapp',
                                 whatsappOptIn: true,
                               });
-                              alert('Contact saved to CRM');
+                              toast.success('Contact saved to CRM');
                             } catch (e: any) {
-                              alert(e?.response?.data?.error || 'Contact may already exist in CRM');
+                              toast.error(e?.response?.data?.error || 'Contact may already exist in CRM');
                             }
                           }}
                           className="flex items-center gap-2 p-2.5 bg-blue-50 rounded-lg text-xs font-medium text-blue-700 dark:text-blue-300 hover:bg-blue-100"
@@ -1387,7 +1418,7 @@ const ChatView: React.FC<{
                               selectedContact.tags.push(flag);
                               apiClient.put(`/contacts/${selectedContact.id}`, { tags: selectedContact.tags }).catch(() => {});
                             }
-                            alert('Contact marked as blocked in CRM (WhatsApp-blocked tag added)');
+                            toast.success('Contact marked as blocked in CRM (WhatsApp-blocked tag added)');
                           }}
                           className="flex items-center gap-2 p-2.5 bg-red-50 rounded-lg text-xs font-medium text-red-700 hover:bg-red-100"
                         >
@@ -1396,7 +1427,7 @@ const ChatView: React.FC<{
                       </div>
                     </div>
 
-                    {/* Shared Media â€” real media from this conversation */}
+                    {/* Shared Media — real media from this conversation */}
                     <div>
                       <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">Shared Media</h4>
                       {(() => {
@@ -1416,7 +1447,7 @@ const ChatView: React.FC<{
                       })()}
                     </div>
 
-                    {/* Recent Activity â€” real message timestamps from this chat */}
+                    {/* Recent Activity — real message timestamps from this chat */}
                     <div>
                       <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">Recent Activity</h4>
                       {(() => {
@@ -1451,7 +1482,7 @@ const ChatView: React.FC<{
               <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <MessageSquare size={48} className="text-green-500" />
               </div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">BizzAuto Solutions WhatsApp</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">{useAuthStore.getState().business?.name || 'WhatsApp'} — Business Chat</h2>
               <p className="text-gray-500 dark:text-gray-400 mb-6">Send and receive messages right from your dashboard. Click on a contact to start chatting.</p>
               <div className="grid grid-cols-2 gap-3">
                 <button onClick={() => setShowNewChat(true)} className="p-3 bg-green-500 text-white rounded-xl font-medium hover:bg-green-600 flex items-center justify-center gap-2">
@@ -1577,12 +1608,12 @@ const BroadcastView: React.FC = () => {
             </>
           ) : (
             <>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">Broadcast Queued! ðŸŽ‰</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">Broadcast Queued! 🎉</h2>
               <p className="text-gray-600 dark:text-gray-300 mb-2">{result?.queued ?? selectedContacts.length} contacts ke liye queue ho gaya</p>
               {result?.estimatedTime && <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Estimated time: {result.estimatedTime}</p>}
               {result?.channel && <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Channel: {result.channel === 'evolution' ? 'Evolution (WhatsApp Web)' : 'Meta Cloud API'}</p>}
               {!!result?.skippedDailyLimit && <p className="text-sm text-amber-600 mb-2">{result.skippedDailyLimit} contacts skipped (daily limit)</p>}
-              <p className="text-xs text-gray-400 mb-6">Messages background mein staggered delay ke saath jayenge â€” anti-ban pacing applied</p>
+              <p className="text-xs text-gray-400 mb-6">Messages background mein staggered delay ke saath jayenge — anti-ban pacing applied</p>
             </>
           )}
           <button onClick={() => { setStep('select'); setSelectedContacts([]); setSelectedTemplate(null); broadcastError.current = null; }} className="px-4 sm:px-5 md:px-6 py-3 bg-green-500 text-white rounded-xl hover:bg-green-600 font-medium">
@@ -1817,7 +1848,7 @@ const BroadcastView: React.FC = () => {
                               return hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;
                             })()}
                           </span>
-                          {' '}for {selectedContacts.length} messages ï¿½ {Math.ceil(selectedContacts.length / dripBatchSize)} batches
+                          {' '}for {selectedContacts.length} messages  {Math.ceil(selectedContacts.length / dripBatchSize)} batches
                         </p>
                       </div>
                     </div>
@@ -1849,7 +1880,7 @@ const BroadcastView: React.FC = () => {
                         .replace(/\{\{1\}\}/g, 'Rahul')
                         .replace(/\{\{2\}\}/g, '30')
                         .replace(/\{\{3\}\}/g, 'March 31')
-                        .replace(/\{\{4\}\}/g, '+91 8983027975')}
+                        .replace(/\{\{4\}\}/g, useAuthStore.getState().business?.phone || '+91XXXXXXXXXX')}
                     </p>
                     {selectedTemplate.footer && <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 italic">{selectedTemplate.footer}</p>}
                     <div className="flex items-center justify-end gap-1 mt-1">
@@ -1881,6 +1912,7 @@ const BroadcastView: React.FC = () => {
 // ============================================================
 
 const TemplateManagerView: React.FC = () => {
+  const toast = useToast();
   const [templates, setTemplates] = useState<WATemplate[]>([]);
   const [templatesLoading, setTemplatesLoading] = useState(true);
 
@@ -1889,6 +1921,7 @@ const TemplateManagerView: React.FC = () => {
   }, []);
   const [showCreate, setShowCreate] = useState(false);
   const [newTemplate, setNewTemplate] = useState({ name: '', category: 'MARKETING', language: 'en', content: '', footer: '' });
+  const [createError, setCreateError] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'approved' | 'pending' | 'rejected'>('all');
 
   const filtered = templates.filter(t => filterStatus === 'all' || t.status === filterStatus);
@@ -1910,7 +1943,7 @@ const TemplateManagerView: React.FC = () => {
 
       <div className="flex-1 overflow-y-auto p-4 sm:p-5 md:p-6">
         {/* Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3 sm:gap-4 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 mb-6">
           {[
             { label: 'Total', value: templates.length, color: 'bg-blue-500' },
             { label: 'Approved', value: templates.filter(t => t.status === 'approved').length, color: 'bg-green-500' },
@@ -1919,7 +1952,7 @@ const TemplateManagerView: React.FC = () => {
           ].map(stat => (
             <div key={stat.label} className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 flex items-center gap-4">
               <div className={`w-12 h-12 ${stat.color} rounded-xl flex items-center justify-center text-white font-bold text-lg`}>{stat.value}</div>
-              <div><p className="text-sm text-gray-500 dark:text-gray-400">{stat.label}</p><p className="text-lg font-bold text-gray-900 dark:text-white">{stat.label} Templates</p></div>
+              <div><p className="text-sm text-gray-500 dark:text-gray-400">{stat.label}</p><p className="text-xs text-gray-400 dark:text-gray-500">Templates</p></div>
             </div>
           ))}
         </div>
@@ -1975,19 +2008,27 @@ const TemplateManagerView: React.FC = () => {
               <input type="text" value={newTemplate.footer} onChange={e => setNewTemplate({ ...newTemplate, footer: e.target.value })} placeholder="e.g., Reply STOP to unsubscribe" className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg" />
             </div>
             <div className="flex justify-end gap-3">
+              {createError && (
+                <p className="text-sm text-red-600 dark:text-red-400 self-center flex-1">{createError}</p>
+              )}
               <button onClick={() => setShowCreate(false)} className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">Cancel</button>
               <button
                 onClick={async () => {
-                  if (newTemplate.name && newTemplate.content) {
-                    try {
-                      const res = await whatsappAPI.createTemplate(newTemplate);
-                      const created = res.data?.data || res.data;
-                      setTemplates(prev => [...prev, { id: created?.id || `t-${Date.now()}`, ...newTemplate, status: 'pending' as const, variables: (newTemplate.content.match(/\{\{\d+\}\}/g) || []).map((_, i) => `var_${i + 1}`) }]);
-                    } catch {
-                      setTemplates(prev => [...prev, { id: `t-${Date.now()}`, ...newTemplate, status: 'pending' as const, variables: (newTemplate.content.match(/\{\{\d+\}\}/g) || []).map((_, i) => `var_${i + 1}`) }]);
-                    }
+                  if (!newTemplate.name || !newTemplate.content) {
+                    setCreateError('Template name and message body are required');
+                    return;
+                  }
+                  setCreateError('');
+                  try {
+                    await whatsappAPI.createTemplate(newTemplate);
+                    toast.success('Template submitted to Meta for approval');
                     setShowCreate(false);
                     setNewTemplate({ name: '', category: 'MARKETING', language: 'en', content: '', footer: '' });
+                    // Refetch from server so the real Meta state (status/id) is shown
+                    setTemplatesLoading(true);
+                    fetchTemplates().then(t => { setTemplates(t); setTemplatesLoading(false); });
+                  } catch (e: any) {
+                    setCreateError(e?.response?.data?.details || e?.response?.data?.error || e?.message || 'Failed to submit template to Meta');
                   }
                 }}
                 className="px-4 sm:px-5 md:px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 font-medium"
@@ -2012,7 +2053,7 @@ const TemplateManagerView: React.FC = () => {
                     <div className="flex items-center gap-2 mt-0.5">
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColors[template.status]}`}>{template.status}</span>
                       <span className="text-xs text-gray-400">{template.category}</span>
-                      <span className="text-xs text-gray-400">ï¿½</span>
+                      <span className="text-xs text-gray-400"></span>
                       <span className="text-xs text-gray-400">{template.language === 'en' ? '???? English' : template.language === 'hi' ? '???? Hindi' : template.language}</span>
                     </div>
                   </div>
@@ -2169,7 +2210,7 @@ const WhatsAppSettingsView: React.FC = () => {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Random Jitter: +{antiBan.randomDelayMs}ms</label>
                     <input type="range" min={0} max={30000} step={500} value={antiBan.randomDelayMs} onChange={e => setAntiBan(p => ({ ...p, randomDelayMs: Number(e.target.value) }))} className="w-full accent-green-600" />
-                    <p className="text-xs text-gray-400 mt-1">Random extra delay â€” hides fixed-interval pattern</p>
+                    <p className="text-xs text-gray-400 mt-1">Random extra delay — hides fixed-interval pattern</p>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Daily Limit: {antiBan.maxMessagesPerDay} msgs/day</label>
@@ -2178,14 +2219,14 @@ const WhatsAppSettingsView: React.FC = () => {
                   </div>
                 </div>
                 <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 text-xs text-blue-700 dark:text-blue-300">
-                  <strong>Pro tip:</strong> Templates mein <code className="bg-blue-100 dark:bg-blue-900 px-1 rounded">{'{Hi|Hello|Namaste}'}</code> spintax aur <code className="bg-blue-100 dark:bg-blue-900 px-1 rounded">{'{name}'}</code> use karo â€” har message unique banega, ban risk sabse kam.
+                  <strong>Pro tip:</strong> Templates mein <code className="bg-blue-100 dark:bg-blue-900 px-1 rounded">{'{Hi|Hello|Namaste}'}</code> spintax aur <code className="bg-blue-100 dark:bg-blue-900 px-1 rounded">{'{name}'}</code> use karo — har message unique banega, ban risk sabse kam.
                 </div>
                 <button onClick={saveAntiBan} disabled={antiBanSaving} className="px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600 disabled:opacity-50">
                   {antiBanSaving ? 'Saving...' : 'Save Anti-Ban Settings'}
                 </button>
               </div>
             )}
-            {antiBanLoading && <p className="text-xs text-gray-400 mt-3">Loading anti-ban settingsâ€¦</p>}
+            {antiBanLoading && <p className="text-xs text-gray-400 mt-3">Loading anti-ban settings…</p>}
           </div>
 
           {/* Number Rotation (Multi-Account) */}
@@ -2203,8 +2244,8 @@ const WhatsAppSettingsView: React.FC = () => {
             {!rotationLoading && rotation.enabled && (
               <div className="space-y-4 mt-4 pt-4 border-t border-gray-100">
                 <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3 text-xs text-purple-700 dark:text-purple-300">
-                  <strong>How it works:</strong> Msg 1 â†’ {primaryInstance || 'Primary number'}, Msg 2 â†’ Number 2, Msg 3 â†’ Number 3, Msg 4 â†’ {primaryInstance || 'Primary'} againâ€¦
-                  Har connected number ~50â€“150MB RAM use karta hai (server par). Sirf <strong>campaign/bulk</strong> sends rotate hote hain â€” normal chats &amp; auto-replies apne number se hi jaate hain.
+                  <strong>How it works:</strong> Msg 1 → {primaryInstance || 'Primary number'}, Msg 2 → Number 2, Msg 3 → Number 3, Msg 4 → {primaryInstance || 'Primary'} again…
+                  Har connected number ~50â€“150MB RAM use karta hai (server par). Sirf <strong>campaign/bulk</strong> sends rotate hote hain — normal chats &amp; auto-replies apne number se hi jaate hain.
                 </div>
 
                 {rotation.pool.map((entry, idx) => (
@@ -2236,7 +2277,7 @@ const WhatsAppSettingsView: React.FC = () => {
                         className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm"
                       />
                     </div>
-                    <p className="text-[11px] text-gray-400">Pehle is instance ko WhatsApp â†’ Connect se ek baar connect karna hoga (QR scan us number se).</p>
+                    <p className="text-[11px] text-gray-400">Pehle is instance ko WhatsApp → Connect se ek baar connect karna hoga (QR scan us number se).</p>
                   </div>
                 ))}
 
@@ -2254,7 +2295,7 @@ const WhatsAppSettingsView: React.FC = () => {
                 </button>
               </div>
             )}
-            {rotationLoading && <p className="text-xs text-gray-400 mt-3">Loading rotation settingsâ€¦</p>}
+            {rotationLoading && <p className="text-xs text-gray-400 mt-3">Loading rotation settings…</p>}
           </div>
 
           {/* Auto Reply */}
@@ -2481,7 +2522,7 @@ const CampaignsView: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2"><Zap size={22} className="text-yellow-500" /> Campaigns</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Drip campaigns &amp; automated sequences â€” rotation + anti-ban auto-applied</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Drip campaigns &amp; automated sequences — rotation + anti-ban auto-applied</p>
           </div>
           <button onClick={() => setShowCreate(true)} className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 font-medium flex items-center gap-2">
             <Plus size={18} /> New Campaign
@@ -2501,19 +2542,19 @@ const CampaignsView: React.FC = () => {
                 <option value="broadcast">Broadcast (send now)</option>
               </select>
             </div>
-            <textarea rows={3} value={form.content} onChange={e => setForm(p => ({ ...p, content: e.target.value }))} placeholder="Message â€” {Hi|Hello} {name}! spintax + personalization supported" className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm" />
+            <textarea rows={3} value={form.content} onChange={e => setForm(p => ({ ...p, content: e.target.value }))} placeholder="Message — {Hi|Hello} {name}! spintax + personalization supported" className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm" />
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <input type="datetime-local" value={form.scheduledAt} onChange={e => setForm(p => ({ ...p, scheduledAt: e.target.value }))} className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm" />
               <button onClick={createCampaign} disabled={creating || !form.name.trim()} className="px-5 py-2 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600 disabled:opacity-50">
-                {creating ? 'Creatingâ€¦' : 'Create Campaign'}
+                {creating ? 'Creating…' : 'Create Campaign'}
               </button>
               <button onClick={() => setShowCreate(false)} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">Cancel</button>
             </div>
-            <p className="text-xs text-gray-400">Targeting contacts/tags set karna ho to full Campaigns page use karo â€” yahan se quick campaign ban jayega (targetTags ke bina sab opted-in contacts ko queue hota hai jab dispatch hoga).</p>
+            <p className="text-xs text-gray-400">Targeting contacts/tags set karna ho to full Campaigns page use karo — yahan se quick campaign ban jayega (targetTags ke bina sab opted-in contacts ko queue hota hai jab dispatch hoga).</p>
           </div>
         )}
 
-        {/* Summary Cards â€” real numbers */}
+        {/* Summary Cards — real numbers */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3 sm:gap-4 mb-6">
           <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 text-center">
             <p className="text-xl sm:text-2xl sm:text-3xl font-bold text-green-600 dark:text-green-400">{stats.totalSent.toLocaleString()}</p>
@@ -2540,12 +2581,12 @@ const CampaignsView: React.FC = () => {
         {/* Campaigns List */}
         <div className="space-y-3">
           {loading ? (
-            <div className="text-center py-10 text-gray-400 text-sm">Loading campaignsâ€¦</div>
+            <div className="text-center py-10 text-gray-400 text-sm">Loading campaigns…</div>
           ) : campaigns.length === 0 ? (
             <div className="text-center py-14 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700">
               <Zap size={44} className="mx-auto text-gray-300 mb-3" />
               <h3 className="font-semibold text-gray-900 dark:text-white mb-1">No campaigns yet</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Pehla campaign banao â€” drip ya broadcast</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Pehla campaign banao — drip ya broadcast</p>
               <button onClick={() => setShowCreate(true)} className="px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600">+ New Campaign</button>
             </div>
           ) : campaigns.map(campaign => (
@@ -2557,7 +2598,7 @@ const CampaignsView: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900 dark:text-white">{campaign.name}</h4>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{campaign.type} Â· Created {campaign.createdAt}{campaign.scheduledAt ? ` Â· Scheduled ${new Date(campaign.scheduledAt).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}` : ''}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{campaign.type} · Created {campaign.createdAt}{campaign.scheduledAt ? ` · Scheduled ${new Date(campaign.scheduledAt).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}` : ''}</p>
                   </div>
                 </div>
                 <span className={`text-xs font-semibold px-3 py-1 rounded-full ${statusConfig[campaign.status]?.bg} ${statusConfig[campaign.status]?.color}`}>{campaign.status}</span>
@@ -2691,7 +2732,7 @@ const ScheduledMessagesView: React.FC = () => {
                   type="tel"
                   value={form.phone}
                   onChange={e => setForm({ ...form, phone: e.target.value })}
-                  placeholder="+91 8983027975"
+                  placeholder="+91 98765 43210"
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 text-sm"
                 />
               </div>

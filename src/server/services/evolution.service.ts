@@ -252,7 +252,9 @@ export class EvolutionApiService {
           const existingConfig = existingIntegration.config as any;
           resolvedPhone = existingConfig.phone || '';
         }
-      } catch {}
+      } catch (e: any) {
+        console.warn('[Evolution] Could not resolve phone from existing integration:', e?.message || e);
+      }
     }
     if (!resolvedPhone) {
       resolvedPhone = '919999999999'; // placeholder — user should update in settings
@@ -289,9 +291,13 @@ export class EvolutionApiService {
             { headers: { apikey: config.apiKey }, timeout: 5000 }
           );
           console.log(`[Evolution] Cleaned stale instance: ${stale.name}`);
-        } catch {}
+        } catch (e: any) {
+          console.warn(`[Evolution] Failed to clean stale instance ${stale.name}: ${e?.response?.status || e?.message}`);
+        }
       }
-    } catch {}
+    } catch (e: any) {
+      console.warn('[Evolution] Stale-instance cleanup skipped:', e?.response?.status || e?.message);
+    }
 
     // Step 2: Wait 3 seconds for cleanup to propagate
     console.log('[Evolution] Waiting 3s for cleanup...');
@@ -544,7 +550,9 @@ export class EvolutionApiService {
             const instanceData = Array.isArray(fetchRes.data) ? fetchRes.data[0] : fetchRes.data;
             phone = instanceData?.instance?.phone || instanceData?.phone || '';
             profileName = instanceData?.instance?.profileName || instanceData?.profileName || profileName;
-          } catch {}
+          } catch (e: any) {
+            console.warn(`[Evolution] Could not fetch instance details for ${config.instanceName}: ${e?.response?.status || e?.message}`);
+          }
 
           try {
             const profileRes = await axios.post(
@@ -553,7 +561,9 @@ export class EvolutionApiService {
               { headers: { apikey: config.apiKey }, timeout: 10000 }
             );
             profilePicUrl = profileRes.data?.profilePictureUrl || '';
-          } catch {}
+          } catch (e: any) {
+            console.warn(`[Evolution] Could not fetch profile picture for ${config.instanceName}: ${e?.response?.status || e?.message}`);
+          }
 
           await this.updateStatus(businessId, 'connected');
           return { status: 'connected', phone, profileName, profilePicUrl };

@@ -1,0 +1,81 @@
+{
+  "timestamp": "2026-09-05T19:54:46.961Z",
+  "baseUrl": "http://localhost:3000",
+  "results": [
+    {
+      "name": "app.health-endpoint",
+      "ok": false,
+      "critical": true,
+      "detail": "fetch failed"
+    },
+    {
+      "name": "subsystem.db",
+      "ok": false,
+      "critical": true,
+      "detail": "unreachable app"
+    },
+    {
+      "name": "db.direct",
+      "ok": true,
+      "critical": true,
+      "detail": "SELECT 1 ok"
+    },
+    {
+      "name": "business.messages-failed-24h-window",
+      "ok": true,
+      "critical": false,
+      "detail": "total failed messages: 0"
+    },
+    {
+      "name": "redis.ping",
+      "ok": false,
+      "critical": true,
+      "detail": "Connection is closed."
+    },
+    {
+      "name": "queues.system-snapshot",
+      "ok": true,
+      "critical": false,
+      "detail": "SKIPPED — set GUARDIAN_TOKEN for queue audit"
+    },
+    {
+      "name": "host.disk-free-C",
+      "ok": false,
+      "critical": true,
+      "detail": "4.9 GB free"
+    },
+    {
+      "name": "guardian.self-memory",
+      "ok": true,
+      "critical": false,
+      "detail": "74 MB rss"
+    }
+  ],
+  "verdict": "CRITICAL_FAILURE",
+  "criticalFailures": [
+    {
+      "name": "app.health-endpoint",
+      "ok": false,
+      "critical": true,
+      "detail": "fetch failed"
+    },
+    {
+      "name": "subsystem.db",
+      "ok": false,
+      "critical": true,
+      "detail": "unreachable app"
+    },
+    {
+      "name": "redis.ping",
+      "ok": false,
+      "critical": true,
+      "detail": "Connection is closed."
+    },
+    {
+      "name": "host.disk-free-C",
+      "ok": false,
+      "critical": true,
+      "detail": "4.9 GB free"
+    }
+  ]
+}

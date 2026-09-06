@@ -860,7 +860,7 @@ const GoogleBusinessPage: React.FC = () => {
                   </button>
                 </div>
                 <p className="text-xs text-gray-400 mt-3">
-                  dY'� Tip: Create multiple templates and they will rotate daily for variety!
+                  💡 Tip: Create multiple templates and they will rotate daily for variety!
                 </p>
               </div>
             </>

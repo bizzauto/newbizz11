@@ -1,3 +1,4 @@
+﻿import { useToast } from './Toast';
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   Upload, FileText, CheckCircle, XCircle, AlertTriangle,
@@ -503,6 +504,7 @@ const CAReports: React.FC = () => {
 // FILE COMPARE - Upload Excel/PDF, compare ledger vs bank
 // ============================================================
 const FileCompare: React.FC = () => {
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [ledgerFiles, setLedgerFiles] = useState<File[]>([]);
@@ -515,7 +517,7 @@ const FileCompare: React.FC = () => {
   const handleCompare = async () => {
     if (ledgerFiles.length === 0 && bankFiles.length === 0) return;
     if (ledgerAccount.trim() && bankAccount.trim() && ledgerAccount.trim() !== bankAccount.trim()) {
-      alert('Account numbers do not match! Please verify the accounts.');
+      toast.error('Account numbers do not match! Please verify the accounts.');
       return;
     }
     setLoading(true);

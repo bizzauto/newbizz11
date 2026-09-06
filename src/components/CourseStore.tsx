@@ -1,3 +1,4 @@
+﻿import { useToast } from './Toast';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, Clock, Users, Star, ShoppingCart, Loader2, Search, Play, CheckCircle, GraduationCap, ArrowLeft, Lock } from 'lucide-react';
@@ -52,6 +53,7 @@ declare global {
 }
 
 export default function CourseStore() {
+  const toast = useToast();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
   const [courses, setCourses] = useState<Course[]>([]);
@@ -109,7 +111,7 @@ export default function CourseStore() {
       return;
     }
 
-    // Paid course — initiate Razorpay
+    // Paid course â€” initiate Razorpay
     startPayment(course);
   };
 
@@ -141,7 +143,7 @@ export default function CourseStore() {
 
       const res = await coursesAPI.createCheckout(course.id);
       if (!res.data.success) {
-        alert(res.data.error || 'Failed to create checkout');
+        toast.error(res.data.error || 'Failed to create checkout');
         return;
       }
 
@@ -163,7 +165,7 @@ export default function CourseStore() {
             });
             navigate(`/course-player/${course.id}`);
           } catch {
-            alert('Payment verification failed. Please contact support.');
+            toast.error('Payment verification failed. Please contact support.');
           }
         },
         prefill: {
@@ -176,7 +178,7 @@ export default function CourseStore() {
       rzp.open();
     } catch (err: any) {
       const msg = err?.message || err?.response?.data?.error || 'Payment failed. Please try again.';
-      alert(msg);
+      toast.success(msg);
     } finally {
       setPurchasing(false);
     }

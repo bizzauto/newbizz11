@@ -25,11 +25,19 @@ function getDevEncryptionKey(): string {
         return existing;
       }
     }
-  } catch {}
+  } catch (e: any) {
+    // WARNING: failing to READ an existing key file is a data-loss risk —
+    // a fresh key would make previously encrypted rows unreadable.
+    console.error('[DataEncryption] CRITICAL: cannot read encryption key file:', keyFile, e?.message);
+  }
   const newKey = crypto.randomBytes(32).toString('hex');
   try {
     fs.writeFileSync(keyFile, newKey, 'utf8');
-  } catch {}
+  } catch (e: any) {
+    // Without persistence every restart generates a NEW key → existing
+    // encrypted data (phones/emails) becomes permanently undecryptable.
+    console.error('[DataEncryption] CRITICAL: cannot persist dev encryption key — encrypted data WILL be unreadable after restart. Fix file permissions on:', keyFile, e?.message);
+  }
   return newKey;
 }
 

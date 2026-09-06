@@ -569,10 +569,56 @@ router.post('/send/template', authenticate, checkMessageLimit, async (req: AuthR
       where: { id: req.user.businessId },
     });
 
+    // Evolution-only businesses (QR connect): Meta HSM templates don't exist
+    // there. Send the template's actual CONTENT as a text message instead of
+    // the template name.
     if (!business?.waPhoneNumberId || !business?.waAccessToken) {
-      return res.status(400).json({
-        success: false,
-        error: 'WhatsApp not configured',
+      const localTemplate = await prisma.messageTemplate.findFirst({
+        where: { businessId: req.user.businessId, name: templateName },
+      });
+      const templateContent = localTemplate?.content || '';
+      if (!templateContent) {
+        return res.status(404).json({
+          success: false,
+          error: 'Template not found. Create it in the Templates tab first.',
+        });
+      }
+
+      let rendered = templateContent;
+      if (Array.isArray(components)) {
+        // Substitute body params ({{1}}, {{2}}...) from body_params if provided
+        const bodyParams: string[] = (components.find((c: any) => c?.type === 'BODY')?.parameters || [])
+          .map((p: any) => p?.text || '');
+        if (bodyParams.length > 0) {
+          bodyParams.forEach((val, idx) => {
+            rendered = rendered.replace(new RegExp(`\\{\\{\\s*${idx + 1}\\s*\\}\\}`, 'g'), val);
+          });
+        }
+      }
+
+      const { WhatsAppSendRouter } = await import('../services/whatsapp-send-router.service.js');
+      const result = await WhatsAppSendRouter.sendText(
+        req.user.businessId,
+        contact.phone,
+        rendered,
+        { contactId: contact.id }
+      );
+
+      await prisma.message.create({
+        data: {
+          businessId: req.user.businessId,
+          contact: { connect: { id: contact.id } },
+          direction: 'outbound',
+          type: 'template',
+          content: rendered,
+          status: 'sent',
+          metadata: { templateName, channel: 'evolution' },
+        },
+      });
+
+      return res.json({
+        success: true,
+        data: { messageId: result?.key?.id || null, channel: 'evolution' },
       });
     }
 
@@ -898,10 +944,26 @@ router.get('/templates', authenticate, async (req: AuthRequest, res: Response) =
       where: { id: req.user.businessId },
     });
 
+    // Evolution-only businesses (QR connect) have no Meta Cloud API — serve
+    // locally-stored MessageTemplate rows instead so the Templates tab works.
     if (!business?.waAccessToken) {
-      return res.status(400).json({
-        success: false,
-        error: 'WhatsApp not configured',
+      const localTemplates = await prisma.messageTemplate.findMany({
+        where: { businessId: req.user.businessId },
+        orderBy: [{ isActive: 'desc' }, { createdAt: 'desc' }],
+      });
+      return res.json({
+        success: true,
+        data: localTemplates.map((t) => ({
+          id: t.id,
+          name: t.name,
+          category: t.category,
+          language: t.language,
+          status: t.status,
+          components: [
+            ...(t.content ? [{ type: 'BODY', text: t.content }] : []),
+            ...(Array.isArray(t.components) ? t.components : []),
+          ],
+        })),
       });
     }
 
@@ -1295,7 +1357,7 @@ router.post('/send/image', authenticate, async (req: AuthRequest, res: Response)
 // Create template
 router.post('/templates', authenticate, requireBusinessOwner, async (req: AuthRequest, res: Response) => {
   try {
-    const { name, category, language, components } = req.body;
+    const { name, category, language, content, footer, components } = req.body;
 
     if (!name || !category || !language) {
       return res.status(400).json({
@@ -1304,14 +1366,50 @@ router.post('/templates', authenticate, requireBusinessOwner, async (req: AuthRe
       });
     }
 
+    // Meta requires at least a BODY component. If the caller sent plain
+    // content/footer (as the Create Template UI does), build components from it.
+    let metaComponents = Array.isArray(components) && components.length > 0 ? components : [];
+    if (metaComponents.length === 0) {
+      if (!content || !String(content).trim()) {
+        return res.status(400).json({
+          success: false,
+          error: 'Template content is required',
+        });
+      }
+      metaComponents = [{ type: 'BODY', text: String(content) }];
+      if (footer && String(footer).trim()) {
+        metaComponents.push({ type: 'FOOTER', text: String(footer) });
+      }
+    }
+
     const business = await prisma.business.findUnique({
       where: { id: req.user.businessId },
     });
 
+    // Evolution-only businesses (QR connect) have no Meta Cloud API — persist
+    // as a local MessageTemplate so it can be sent as text/buttons later.
     if (!business?.waAccessToken) {
-      return res.status(400).json({
-        success: false,
-        error: 'WhatsApp not configured',
+      const localTemplate = await prisma.messageTemplate.create({
+        data: {
+          businessId: req.user.businessId,
+          name: String(name).trim().slice(0, 100),
+          category: ['MARKETING', 'UTILITY'].includes(category) ? category : 'MARKETING',
+          language: language || 'en',
+          status: 'APPROVED',
+          content: String(content || ''),
+          components: metaComponents,
+          variables: (String(content || '').match(/\{\{\s*[\w.]+\s*\}\}/g) || []),
+        },
+      });
+      return res.json({
+        success: true,
+        data: {
+          id: localTemplate.id,
+          name: localTemplate.name,
+          category: localTemplate.category,
+          language: localTemplate.language,
+          status: localTemplate.status,
+        },
       });
     }
 
@@ -1323,7 +1421,7 @@ router.post('/templates', authenticate, requireBusinessOwner, async (req: AuthRe
         name,
         category,
         language,
-        components: components || [],
+        components: metaComponents,
       },
       {
         headers: {
@@ -1338,6 +1436,9 @@ router.post('/templates', authenticate, requireBusinessOwner, async (req: AuthRe
       data: response.data,
     });
   } catch (error: any) {
+    if (error?.code === 'P2002') {
+      return res.status(400).json({ success: false, error: 'A template with this name already exists' });
+    }
     console.error('Create template error:', error);
     res.status(500).json({
       success: false,
@@ -1356,10 +1457,14 @@ router.delete('/templates/:id', authenticate, requireBusinessOwner, async (req: 
       where: { id: req.user.businessId },
     });
 
+    // Evolution-only businesses: delete the local MessageTemplate instead.
     if (!business?.waAccessToken) {
-      return res.status(400).json({
-        success: false,
-        error: 'WhatsApp not configured',
+      await prisma.messageTemplate.deleteMany({
+        where: { id, businessId: req.user.businessId },
+      });
+      return res.json({
+        success: true,
+        message: 'Template deleted successfully',
       });
     }
 

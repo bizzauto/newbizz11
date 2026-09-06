@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "Admin Alert",
   "nodes": [
     {
@@ -22,7 +22,7 @@
       "position": [470, 300],
       "parameters": {
         "method": "POST",
-        "url": "https://crm.bizzauto.app/api/admin/notify",
+        "url": "https://bizzautoai.com/api/admin/notify",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,

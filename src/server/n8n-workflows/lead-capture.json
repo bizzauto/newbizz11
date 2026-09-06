@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "Lead Capture & Enrich",
   "nodes": [
     {
@@ -59,7 +59,7 @@
       "position": [910, 300],
       "parameters": {
         "method": "POST",
-        "url": "https://crm.bizzauto.app/api/leads",
+        "url": "https://bizzautoai.com/api/leads",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
@@ -97,7 +97,7 @@
       "position": [1130, 400],
       "parameters": {
         "method": "POST",
-        "url": "https://crm.bizzauto.app/api/nurture/enroll",
+        "url": "https://bizzautoai.com/api/nurture/enroll",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,

@@ -1,5 +1,5 @@
-{
-  "name": "HR — Employee Onboarding",
+﻿{
+  "name": "HR â€” Employee Onboarding",
   "nodes": [
     {
       "id": "1",
@@ -18,7 +18,7 @@
       "position": [480, 250],
       "parameters": {
         "method": "POST",
-        "url": "https://crm.bizzauto.app/api/email/send",
+        "url": "https://bizzautoai.com/api/email/send",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true, "specifyBody": "json",
@@ -33,7 +33,7 @@
       "position": [480, 420],
       "parameters": {
         "method": "POST",
-        "url": "https://crm.bizzauto.app/api/tasks",
+        "url": "https://bizzautoai.com/api/tasks",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true, "specifyBody": "json",
@@ -48,7 +48,7 @@
       "position": [710, 420],
       "parameters": {
         "method": "POST",
-        "url": "https://crm.bizzauto.app/api/whatsapp/send",
+        "url": "https://bizzautoai.com/api/whatsapp/send",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true, "specifyBody": "json",

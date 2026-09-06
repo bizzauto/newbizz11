@@ -94,13 +94,15 @@ describe('WhatsAppService', () => {
       );
 
       // Verify WhatsApp API call
+      // Note: to is normalized to digits-only E.164 (Meta requirement) and the
+      // payload carries recipient_type/preview_url — both intentional.
       expect(mockedAxios.post).toHaveBeenCalledWith(
         expect.stringContaining(`/${PHONE_NUMBER_ID}/messages`),
         expect.objectContaining({
           messaging_product: 'whatsapp',
-          to: TO_NUMBER,
+          to: '919876543210',
           type: 'text',
-          text: { body: 'Hello from test!' },
+          text: { body: 'Hello from test!', preview_url: true },
         }),
         expect.objectContaining({
           headers: expect.objectContaining({
@@ -213,11 +215,12 @@ describe('WhatsAppService', () => {
       );
 
       // Verify WhatsApp API call with template payload
+      // Note: to is normalized to digits-only E.164 (Meta requirement).
       expect(mockedAxios.post).toHaveBeenCalledWith(
         expect.stringContaining(`/${PHONE_NUMBER_ID}/messages`),
         expect.objectContaining({
           messaging_product: 'whatsapp',
-          to: TO_NUMBER,
+          to: '919876543210',
           type: 'template',
           template: expect.objectContaining({
             name: TEMPLATE_NAME,
@@ -278,7 +281,9 @@ describe('WhatsAppService', () => {
       await WhatsAppService.sendTemplate(BUSINESS_ID, TO_NUMBER, TEMPLATE_NAME, LANGUAGE);
 
       const axiosPayload = mockedAxios.post.mock.calls[0][1];
-      expect(axiosPayload.template.components).toEqual([]);
+      // No variables → components block omitted entirely (valid for Meta; only
+      // variable templates need a body components entry).
+      expect(axiosPayload.template.components).toBeUndefined();
     });
 
     it('should use default language "en" when not specified', async () => {
@@ -369,7 +374,12 @@ describe('WhatsAppService', () => {
       expect(mockedAxios.post).toHaveBeenCalledTimes(2);
       expect(mockedPrisma.message.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: { status: 'queued' },
+          // BullMQ-dispatched rows carry metadata.dispatchedVia='bullmq' and are
+          // excluded here to prevent double sends (the worker owns those).
+          where: {
+            status: 'queued',
+            NOT: { metadata: { path: ['dispatchedVia'], equals: 'bullmq' } },
+          },
           take: 100,
         })
       );

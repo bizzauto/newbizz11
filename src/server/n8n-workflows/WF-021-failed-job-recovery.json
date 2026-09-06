@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "Failed Job Recovery",
   "nodes": [
     {
@@ -21,7 +21,7 @@
       "position": [470, 300],
       "parameters": {
         "method": "GET",
-        "url": "https://crm.bizzauto.app/api/jobs/failed",
+        "url": "https://bizzautoai.com/api/jobs/failed",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth"
       }
@@ -34,7 +34,7 @@
       "position": [690, 300],
       "parameters": {
         "method": "POST",
-        "url": "https://crm.bizzauto.app/api/jobs/retry",
+        "url": "https://bizzautoai.com/api/jobs/retry",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,

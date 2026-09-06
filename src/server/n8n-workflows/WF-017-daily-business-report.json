@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "Daily Business Report",
   "nodes": [
     {
@@ -21,7 +21,7 @@
       "position": [470, 300],
       "parameters": {
         "method": "GET",
-        "url": "https://crm.bizzauto.app/api/reports/business",
+        "url": "https://bizzautoai.com/api/reports/business",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth"
       }
@@ -34,7 +34,7 @@
       "position": [690, 300],
       "parameters": {
         "method": "POST",
-        "url": "https://crm.bizzauto.app/api/ai/summarize",
+        "url": "https://bizzautoai.com/api/ai/summarize",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
@@ -50,7 +50,7 @@
       "position": [910, 300],
       "parameters": {
         "method": "POST",
-        "url": "https://crm.bizzauto.app/api/notify",
+        "url": "https://bizzautoai.com/api/notify",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,

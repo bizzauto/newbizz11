@@ -1,5 +1,6 @@
 ﻿import { useState, useEffect, useCallback } from 'react';
 import apiClient from '../lib/api';
+import { useToast } from './Toast';
 import {
   Plus, Search, MoreVertical, Trash2, Edit3, Eye, Copy, BarChart3,
   Settings, ChevronDown, ChevronRight, GripVertical, X, Check,
@@ -177,6 +178,7 @@ const generateMockResponses = (surveyId: string): Response[] => {
 };
 
 export default function SurveyBuilder() {
+  const toast = useToast();
   const [view, setView] = useState<'list' | 'editor' | 'responses'>('list');
   const [surveys, setSurveys] = useState<Survey[]>([]);
   const [activeSurvey, setActiveSurvey] = useState<Survey | null>(null);
@@ -328,9 +330,9 @@ export default function SurveyBuilder() {
       const data = res.data;
       if (data.success) {
         setSurveys(prev => prev.map(s => s.id === activeSurvey.id ? activeSurvey : s));
-        alert('Survey saved successfully!');
-      } else { alert(data.error || 'Failed to save'); }
-    } catch { alert('Failed to save survey'); }
+        toast.success('Survey saved successfully!');
+      } else { toast.error(data.error || 'Failed to save'); }
+    } catch { toast.error('Failed to save survey'); }
     finally { setSaving(false); }
   };
 
@@ -344,8 +346,8 @@ export default function SurveyBuilder() {
         setSurveys(prev => [newSurvey, ...prev]);
         setActiveSurvey(newSurvey);
         setView('editor');
-      } else { alert(data.error || 'Failed to create'); }
-    } catch { alert('Failed to create survey'); }
+      } else { toast.error(data.error || 'Failed to create'); }
+    } catch { toast.error('Failed to create survey'); }
     finally { setSaving(false); }
   };
 
@@ -356,8 +358,8 @@ export default function SurveyBuilder() {
       const data = res.data;
       if (data.success) {
         setSurveys(prev => prev.filter(s => s.id !== id));
-      } else { alert(data.error); }
-    } catch { alert('Failed to delete'); }
+      } else { toast.error(data.error); }
+    } catch { toast.error('Failed to delete'); }
   };
 
   const statusColor = (s: string) => {
