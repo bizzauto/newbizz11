@@ -9,7 +9,7 @@
  * inline) and confirms via checkStatus here — the client redirect is NEVER
  * trusted on its own.
  */
-import { Router, Response } from 'express';
+import { Router, Request, Response } from 'express';
 import { prisma } from '../db.js';
 import { authenticate, AuthRequest } from '../middleware/auth.js';
 import {
@@ -111,8 +111,11 @@ async function findOrderPhonePe(merchantTransactionId: string) {
 
 router.post('/callback', async (req: Request, res: Response) => {
   try {
-    const b64Response = req.body?.response;
-    const xVerify = (req.headers['x-verify'] as string) || '';
+    // Express types body as `any` but GH CI's stricter lib.dom types may widen
+    // it — cast defensively so both type environments compile.
+    const body = (req.body || {}) as Record<string, unknown>;
+    const b64Response = typeof body.response === 'string' ? body.response : undefined;
+    const xVerify = ((req.headers['x-verify'] as string) || '');
 
     if (!b64Response) {
       return res.status(400).json({ success: false, error: 'Missing response payload' });
