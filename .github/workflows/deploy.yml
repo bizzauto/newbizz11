@@ -30,8 +30,11 @@ jobs:
 
       # HARD GATE (P0-3): was "|| echo non-blocking" — type errors could reach
       # production. Full typecheck (client + server) now fails the workflow.
+      # 4GB heap: tsc OOMs on GH runners at default ~2GB with this codebase size.
       - name: TypeScript type check (client + server)
         run: npm run typecheck
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Frontend build check
         run: npx vite build 2>&1 | tail -5
@@ -62,6 +65,9 @@ jobs:
       # must be committed in the same PR to lock the gate.
       - name: Run regression gate
         run: node scripts/guardian/regression-guardian.cjs
+        env:
+          # jest worker OOM protection on 7GB GH runners
+          NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Upload gate evidence
         if: always()
