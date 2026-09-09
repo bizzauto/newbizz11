@@ -147,3 +147,6 @@ extraenv.txt
 *.env11
 *.env22
 *.env22
+
+# deployment helper with secrets — NEVER commit
+coolify-env-ready.txt
