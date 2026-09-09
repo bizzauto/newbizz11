@@ -215,7 +215,8 @@ emailWorker = new Worker(
   async (job: Job) => {
     const { businessId, to, subject, text, html, attachments } = job.data;
 
-    return await EmailService.sendEmail(to, subject, html || text || '');
+    // BYOK: business's own Brevo/SMTP first (their quota), platform as fallback
+    return await EmailService.sendEmail(to, subject, html || text || '', undefined, 3, businessId);
   },
   {
     connection: redisConnection,

@@ -39,8 +39,13 @@ export class BrevoEmailService {
 
   /**
    * Send a transactional email
+   *
+   * BYOK: pass `apiKey` explicitly (the business's own Brevo key loaded from
+   * its Integration record). NEVER mutate process.env per request — concurrent
+   * sends would race and use each other's accounts.
    */
   static async sendTransactionalEmail(data: {
+    apiKey?: string;
     to: string;
     subject: string;
     htmlContent: string;
@@ -54,6 +59,10 @@ export class BrevoEmailService {
     error?: string;
   }> {
     try {
+      const apiKey = data.apiKey || BREVO_API_KEY;
+      if (!apiKey) {
+        return { success: false, error: 'Brevo not configured: no API key (business integration or platform env)' };
+      }
       const payload = {
         sender: {
           email: data.fromEmail || process.env.BREVO_DEFAULT_FROM_EMAIL || 'noreply@bizzauto.com',
@@ -67,7 +76,7 @@ export class BrevoEmailService {
       };
 
       const response = await axios.post(`${BREVO_API_URL}/smtp/email`, payload, {
-        headers: this.getHeaders(),
+        headers: this.getHeaders(apiKey),
         timeout: 30000,
       });
 
@@ -76,6 +85,12 @@ export class BrevoEmailService {
         messageId: response.data.messageId,
       };
     } catch (error: any) {
+      // Rate limit (Brevo daily cap) surfaces as 429 — return it distinctly so
+      // callers can queue/notify instead of retry-bombing.
+      const status = error.response?.status;
+      if (status === 429) {
+        return { success: false, error: 'Brevo daily quota exceeded (300/day on free plan). Try tomorrow or upgrade your Brevo account.' };
+      }
       console.error('[Brevo] Send email failed:', error.response?.data || error.message);
       return {
         success: false,
@@ -317,14 +332,18 @@ export class BrevoEmailService {
   /**
    * Get account info (for testing connection)
    */
-  static async getAccountInfo(): Promise<{
+  static async getAccountInfo(apiKey?: string): Promise<{
     success: boolean;
     data?: { email: string; plan: string; dailyLimit: number };
     error?: string;
   }> {
     try {
+      const key = apiKey || BREVO_API_KEY;
+      if (!key) {
+        return { success: false, error: 'Brevo API key not configured' };
+      }
       const response = await axios.get(`${BREVO_API_URL}/account`, {
-        headers: this.getHeaders(),
+        headers: this.getHeaders(key),
         timeout: 15000,
       });
 
@@ -346,13 +365,13 @@ export class BrevoEmailService {
   /**
    * Test connection
    */
-  static async testConnection(): Promise<{
+  static async testConnection(apiKey?: string): Promise<{
     success: boolean;
     data?: { email: string; plan: string };
     error?: string;
   }> {
     try {
-      const result = await this.getAccountInfo();
+      const result = await this.getAccountInfo(apiKey);
       if (!result.success || !result.data) {
         return { success: false, error: result.error };
       }

@@ -26,11 +26,8 @@ router.get('/status', async (req: AuthRequest, res: Response) => {
 
     if (connected) {
       const config = integration.config as any;
-      // Temporarily set the API key for the test
-      const originalKey = process.env.BREVO_API_KEY;
-      process.env.BREVO_API_KEY = config.apiKey;
-      const result = await BrevoEmailService.getAccountInfo();
-      if (originalKey) process.env.BREVO_API_KEY = originalKey;
+      // BYOK: per-call key (no env mutation)
+      const result = await BrevoEmailService.getAccountInfo(config.apiKey);
       if (result.success) accountInfo = result.data;
     }
 
@@ -66,11 +63,9 @@ router.post('/connect', async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ success: false, error: 'API key is required' });
     }
 
-    // Test connection
-    const originalKey = process.env.BREVO_API_KEY;
-    process.env.BREVO_API_KEY = apiKey;
-    const testResult = await BrevoEmailService.testConnection();
-    if (originalKey) process.env.BREVO_API_KEY = originalKey;
+    // Test connection — per-call key (no env mutation: concurrent requests
+    // would race and test/save the WRONG account's key)
+    const testResult = await BrevoEmailService.testConnection(apiKey);
 
     if (!testResult.success) {
       return res.status(400).json({ success: false, error: `Connection test failed: ${testResult.error}` });

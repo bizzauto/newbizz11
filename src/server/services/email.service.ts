@@ -9,7 +9,13 @@ export class EmailService {
   private static transporter: nodemailer.Transporter | null = null;
 
   /**
-   * Initialize SMTP transporter
+   * Initialize SMTP transporter (PLATFORM fallback — used only when the
+   * business has no own Brevo key / SMTP config).
+   *
+   * SECURITY: no hardcoded credentials. If SMTP_PASS is unset, the platform
+   * transport is unavailable and BYOK (business-configured) paths must be
+   * used — senders will surface a clear 'not configured' error instead of
+   * silently sending from a shared account.
    */
   static getTransporter(): nodemailer.Transporter {
     if (!this.transporter) {
@@ -18,8 +24,8 @@ export class EmailService {
         port: parseInt(process.env.SMTP_PORT || '587'),
         secure: process.env.SMTP_SECURE === 'true',
         auth: {
-          user: process.env.SMTP_USER || 'bizzautoai@gmail.com',
-          pass: process.env.SMTP_PASS || 'xlemojqjpdepjcwa',
+          user: process.env.SMTP_USER || '',
+          pass: process.env.SMTP_PASS || '',
         },
         tls: {
           rejectUnauthorized: false,
@@ -212,15 +218,90 @@ export class EmailService {
   /**
    * Send generic email with automatic retry on failure.
    * Retries up to 3 times with exponential backoff (1s, 2s, 4s).
+   *
+   * BYOK ROUTING (when businessId given):
+   *   1. Business's own Brevo integration  → 300/day free quota (their account)
+   *   2. Business's own SMTP config        → their limits
+   *   3. Platform SMTP (env)               → shared fallback
+   * Without businessId → platform transport (auth emails etc.).
    */
   static async sendEmail(
     to: string,
     subject: string,
     html: string,
     from?: string,
-    retries: number = 3
-  ): Promise<{ success: boolean; error?: string }> {
+    retries: number = 3,
+    businessId?: string
+  ): Promise<{ success: boolean; error?: string; via?: string }> {
     let lastError: string = '';
+
+    // ---------- BYOK: business-owned sending ----------
+    if (businessId) {
+      // 1) Business Brevo integration
+      try {
+        const integration = await prisma.integration.findUnique({
+          where: { businessId_type: { businessId, type: 'brevo_email' } },
+        });
+        if (integration?.isActive) {
+          const config = integration.config as any;
+          if (config?.apiKey) {
+            const { BrevoEmailService } = await import('./brevo-email.service.js');
+            const result = await BrevoEmailService.sendTransactionalEmail({
+              apiKey: config.apiKey,
+              to,
+              subject,
+              htmlContent: html,
+              fromEmail: config.defaultFromEmail,
+              fromName: config.defaultFromName,
+            });
+            if (result.success) return { success: true, via: 'brevo_byok' };
+            lastError = `brevo_byok: ${result.error}`;
+            console.warn(`[EmailService] Business Brevo send failed for ${to}: ${result.error}`);
+            // Daily-quota exhaustion → do NOT fall through (would burn platform quota)
+            if (result.error?.includes('quota')) {
+              return { success: false, error: lastError, via: 'brevo_byok' };
+            }
+          }
+        }
+      } catch (e: any) {
+        lastError = `brevo_byok: ${e.message}`;
+        console.warn('[EmailService] Brevo BYOK lookup failed:', e?.message);
+      }
+
+      // 2) Business SMTP config
+      try {
+        const smtpIntegration = await prisma.integration.findUnique({
+          where: { businessId_type: { businessId, type: 'email_smtp' } },
+        });
+        const smtpConfig = smtpIntegration?.config as any;
+        if (smtpIntegration?.isActive && smtpConfig?.user && smtpConfig?.pass) {
+          const businessTransporter = nodemailer.createTransport({
+            host: smtpConfig.host || 'smtp.gmail.com',
+            port: Number(smtpConfig.port) || 587,
+            secure: !!smtpConfig.secure,
+            auth: { user: smtpConfig.user, pass: smtpConfig.pass },
+            tls: { rejectUnauthorized: false },
+          });
+          const info = await businessTransporter.sendMail({
+            from: from || `"${smtpConfig.fromName || 'BizzAuto'}" <${smtpConfig.fromEmail || smtpConfig.user}>`,
+            to,
+            subject,
+            html,
+          });
+          if (info.rejected && info.rejected.length > 0) {
+            lastError = `Recipient rejected: ${info.rejected.join(', ')}`;
+            return { success: false, error: lastError, via: 'business_smtp' };
+          }
+          return { success: true, via: 'business_smtp' };
+        }
+      } catch (e: any) {
+        lastError = `business_smtp: ${e.message}`;
+        console.warn('[EmailService] Business SMTP send failed:', e?.message);
+      }
+      // 3) Fall through to platform transport below
+    }
+
+    // ---------- Platform transport (env SMTP / fallback) ----------
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
         const transporter = this.getTransporter();
@@ -237,9 +318,9 @@ export class EmailService {
         if (info.rejected && info.rejected.length > 0) {
           lastError = `Recipient rejected by mail server: ${info.rejected.join(', ')}`;
           console.warn(`[EmailService] Recipient rejected ${info.rejected.join(', ')} - not retrying`);
-          return { success: false, error: lastError };
+          return { success: false, error: lastError, via: 'platform' };
         } else {
-          return { success: true };
+          return { success: true, via: 'platform' };
         }
       } catch (error: any) {
         lastError = error.message;
