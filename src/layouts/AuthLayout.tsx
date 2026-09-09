@@ -1,7 +1,8 @@
 ﻿import LanguageSwitcher from '../components/LanguageSwitcher';
 import { getWLBrandShort } from '../lib/wl-brand';
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import apiClient from '../lib/api';
 import {
   Home, MessageSquare, Users, Palette, Star,
   BarChart3, Settings, Bell,
@@ -120,7 +121,11 @@ const settingsSections: { label: string; items: MenuItem[] }[] = [
       { id: '/dograh-settings', label: 'Voice AI', icon: <Bot size={20} /> },
       { id: '/snapshots', label: 'Snapshots', icon: <Camera size={20} /> },
       { id: '/audit-log', label: 'Audit Log', icon: <Shield size={20} />, roles: ['OWNER', 'ADMIN'] },
-      { id: 'https://invoice.bizzautoai.com/dashboard', label: 'BillInvoice', icon: <FileCheck size={20} />, isExternal: true },
+      // BillInvoice (BizzBills) — only shown when the BIZZBILLS bundle is part
+      // of this deployment. CRM-only standalone sales set VITE_BIZZBILLS_ENABLED=false.
+      ...(import.meta.env.VITE_BIZZBILLS_ENABLED === 'true'
+        ? [{ id: 'https://invoice.bizzautoai.com/dashboard', label: 'BillInvoice', icon: <FileCheck size={20} />, isExternal: true }]
+        : []),
     ],
   },
 ];
@@ -273,13 +278,35 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
       .slice(0, 8);
   }, [searchQuery, allNavItems]);
 
+  /**
+   * External link opener (Option A bridge for BillInvoice).
+   * For the BizzBills link, fetch a one-time bridge token from the CRM and
+   * open the bridge URL — user lands logged-in. Falls back to the plain URL
+   * on any error (bridge unconfigured / network fail).
+   */
+  const openExternal = useCallback(async (url: string) => {
+    if (url.includes('invoice.bizzautoai.com')) {
+      try {
+        const res = await apiClient.get('/auth/bizzbills-bridge');
+        const bridgeUrl = res.data?.data?.bridgeUrl;
+        if (bridgeUrl) {
+          window.open(bridgeUrl, '_blank', 'noopener,noreferrer');
+          return;
+        }
+      } catch {
+        // bridge unconfigured or failed — fall through to plain link
+      }
+    }
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }, []);
+
   const handleSearchSelect = (id: string) => {
     setSearchQuery('');
     setShowSearchResults(false);
     // External links (e.g. BillInvoice) must open in a new tab — navigate()
     // would resolve them as relative internal paths (/crm/https:/... → 404).
     if (id.startsWith('http')) {
-      window.open(id, '_blank', 'noopener,noreferrer');
+      openExternal(id);
     } else {
       navigate(id);
     }
@@ -301,7 +328,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
       setShowMobileMenu(!showMobileMenu);
     } else if (id.startsWith('http')) {
       // Defensive: never route external URLs through navigate()
-      window.open(id, '_blank', 'noopener,noreferrer');
+      openExternal(id);
     } else {
       navigate(id);
     }
@@ -401,7 +428,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
             return (
               <button
                 key={item.id}
-                onClick={() => item.id.startsWith("http") ? window.open(item.id, "_blank") : navigate(item.id)}
+                onClick={() => item.id.startsWith("http") ? openExternal(item.id) : navigate(item.id)}
                 className={`shell-nav-item btn-press relative w-full flex items-center justify-between px-3 py-2.5 rounded-xl group ${
                   active ? 'shell-nav-item-active font-medium' : ''
                 }`}
@@ -434,7 +461,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
                 return (
                   <button
                     key={item.id}
-                    onClick={() => item.id.startsWith("http") ? window.open(item.id, "_blank") : navigate(item.id)}
+                    onClick={() => item.id.startsWith("http") ? openExternal(item.id) : navigate(item.id)}
                     className={`shell-nav-item btn-press relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl group ${
                       active ? 'shell-nav-item-active font-medium' : ''
                     }`}
@@ -463,7 +490,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
                 return (
                   <button
                     key={item.id}
-                    onClick={() => item.id.startsWith("http") ? window.open(item.id, "_blank") : navigate(item.id)}
+                    onClick={() => item.id.startsWith("http") ? openExternal(item.id) : navigate(item.id)}
                     className={`shell-nav-item btn-press relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl group ${
                       active ? 'shell-nav-item-active font-medium' : ''
                     }`}
@@ -773,7 +800,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
               {filteredMenuItems.filter(item => !bottomNavItems.find(b => b.id === item.id)).map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => item.id.startsWith("http") ? window.open(item.id, "_blank") : navigate(item.id)}
+                  onClick={() => item.id.startsWith("http") ? openExternal(item.id) : navigate(item.id)}
                   className={`flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all ${
                     isActive(item.id)
                       ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
@@ -794,7 +821,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
                   {section.items.map((item) => (
                     <button
                       key={item.id}
-              onClick={() => item.isExternal ? window.open(item.id, '_blank') : navigate(item.id)}
+              onClick={() => item.isExternal ? openExternal(item.id) : navigate(item.id)}
                       className={`flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all ${
                         isActive(item.id)
                           ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
@@ -819,7 +846,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
                     {section.items.map((item) => (
                       <button
                         key={item.id}
-                        onClick={() => item.id.startsWith("http") ? window.open(item.id, "_blank") : navigate(item.id)}
+                        onClick={() => item.id.startsWith("http") ? openExternal(item.id) : navigate(item.id)}
                         className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
                           isActive(item.id)
                             ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'

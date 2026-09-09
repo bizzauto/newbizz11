@@ -32,7 +32,7 @@ const CheckoutPage: React.FC = () => {
     state: '',
     pincode: '',
   });
-  const [paymentMethod, setPaymentMethod] = useState<'upi' | 'card' | 'netbanking' | 'wallet' | 'cod'>('upi');
+  const [paymentMethod, setPaymentMethod] = useState<'phonepe' | 'upi' | 'card' | 'netbanking' | 'wallet' | 'cod'>('phonepe');
 
   const fetchCart = useCallback(async () => {
     try {
@@ -142,6 +142,18 @@ const CheckoutPage: React.FC = () => {
       });
 
       const order = res.data?.data;
+
+      // PhonePe: server returns a redirect URL — open it, then poll status
+      if (paymentMethod === 'phonepe') {
+        if (order?.phonepePayment?.redirectUrl) {
+          showSuccess('Opening PhonePe...');
+          window.location.href = order.phonepePayment.redirectUrl;
+          return;
+        }
+        showError('PhonePe payment could not be started. Please try another method.');
+        setProcessing(false);
+        return;
+      }
 
       if (paymentMethod !== 'cod' && order?.razorpayOrder) {
         const loaded = await loadRazorpay();
@@ -310,6 +322,17 @@ const CheckoutPage: React.FC = () => {
                   <CreditCard size={20} /> Payment Method
                 </h2>
                 <div className="space-y-3">
+                  {/* PhonePe (direct gateway) */}
+                  <label className={`flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-colors ${paymentMethod === 'phonepe' ? 'border-purple-600 bg-purple-50 dark:bg-purple-900/20' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'}`}>
+                    <input type="radio" name="payment" value="phonepe" checked={paymentMethod === 'phonepe'} onChange={() => setPaymentMethod('phonepe')} className="text-purple-600" />
+                    <Smartphone size={20} className="text-purple-600" />
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900 dark:text-white">PhonePe</p>
+                      <p className="text-sm text-gray-500">Pay directly with PhonePe UPI — fast & secure</p>
+                    </div>
+                    <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded font-medium">Instant</span>
+                  </label>
+
                   {/* UPI */}
                   <label className={`flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-colors ${paymentMethod === 'upi' ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'}`}>
                     <input type="radio" name="payment" value="upi" checked={paymentMethod === 'upi'} onChange={() => setPaymentMethod('upi')} className="text-blue-600" />

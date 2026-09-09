@@ -48,10 +48,12 @@ const statusColors: Record<string, string> = {
 const OrderTrackingPage: React.FC = () => {
   const { orderNumber } = useParams<{ orderNumber: string }>();
   const navigate = useNavigate();
-  const { error: showError } = useToast();
+  const { error: showError, success: showSuccess } = useToast();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchInput, setSearchInput] = useState(orderNumber || '');
+  // PhonePe redirect-return: poll server-side status until COMPLETED (max ~2 min)
+  const isPhonePeReturn = typeof window !== 'undefined' && window.location.search.includes('phonepe=return');
 
   const fetchOrder = useCallback(async (num: string) => {
     if (!num) {
@@ -76,6 +78,27 @@ const OrderTrackingPage: React.FC = () => {
       setSearchInput(orderNumber);
     }
   }, [orderNumber, fetchOrder]);
+
+  // PhonePe return: server verifies with PhonePe directly (client never trusted)
+  useEffect(() => {
+    if (!isPhonePeReturn || !order || order.paymentStatus === 'paid') return;
+    let cancelled = false;
+    const poll = async (attempt: number): Promise<void> => {
+      try {
+        const res = await apiClient.get(`/phonepe/status/${order.id}`);
+        const state = res.data?.data?.state;
+        if (state === 'COMPLETED') {
+          if (!cancelled) { showSuccess('Payment confirmed via PhonePe!'); fetchOrder(orderNumber || ''); }
+          return;
+        }
+        if (attempt < 8 && !cancelled) {
+          setTimeout(() => poll(attempt + 1), 5000 * attempt);
+        }
+      } catch { /* stop polling on auth/network errors */ }
+    };
+    poll(1);
+    return () => { cancelled = true; };
+  }, [isPhonePeReturn, order, orderNumber, fetchOrder, showSuccess]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

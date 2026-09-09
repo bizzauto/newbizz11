@@ -1,5 +1,133 @@
 # QA STATE — Session Continuity
 
+## Guardian Run 11 — 2026-09-07 (Cross-Product Access Audit — "CRM customer BizzBills misuse?")
+
+**User question:** Sirf CRM becha — customer CRM id/password use karke BizzBills to nahi chala sakta?
+
+### Audit result (evidence-based)
+| Path | Status | Why |
+|------|--------|-----|
+| Bridge login | ✅ BLOCKED | CRM-only deploy: BIZZBILLS_BRIDGE_SECRET unset → /api/auth/bizzbills-bridge 503; VITE flag off → link invisible. Koi token banega hi nahi |
+| Direct login (invoice.bizzautoai.com/auth/signin) | ✅ BLOCKED | Separate DB — CRM user BizzBills users table me exist nahi. Bridge-created users ka passwordHash null (bridge-only) — password bhi match nahi |
+| Demo-login route | ✅ Harmless | Sirf validation diagnostic — session create nahi karta |
+| **Public register** | ❌ **LEAK — FIXED** | /auth/register OPEN tha: koi bhi CRM customer self-serve FREE org bana sakta tha (bundle pricing bypass) |
+
+### Fix: Invite-gated registration (sales-driven model)
+- `register/route.ts`: BIZZBILLS_INVITE_CODES unset → 403 CLOSED (bridge = only account path). Codes set → must match
+- Register page: Invite Code field (required)
+- .env.example documented. BizzBills tsc: 0
+
+**Sales model ab clean:**
+- CRM-only: register closed + bridge off + link hidden → **zero BizzBills access**
+- BizzBills-only: invite code manual sales se
+- Bundle: bridge one-click (register ki zaroorat hi nahi)
+
+## Guardian Run 10 — 2026-09-07 (Standalone Selling Strategy — Bundle Toggle)
+
+**User question:** "Alag alag bechana ho to?" — dono products ko separately bhi bechna hai.
+
+### Answer: Bridge is ADDITIVE-ONLY by design — verified both directions
+| Scenario | Behaviour | Evidence |
+|----------|-----------|----------|
+| BizzBills WITHOUT CRM | Normal email/password login untouched (original CredentialsProvider); bridge provider dormant — koi CRM token ban hi nahi sakta (HMAC secret CRM ke paas); /auth/bridge bina token = error + manual login link | auth.ts:16 original provider; bridge route 400/401 paths |
+| CRM WITHOUT BizzBills | **NEW: VITE_BIZZBILLS_ENABLED=false → BillInvoice sidebar item rendered hi nahi hota** (conditional spread in menu array). Bridge secret bhi unset rahega → double protection | AuthLayout.tsx menu; .env.example doc |
+| Bundle (dono) | VITE_BIZZBILLS_ENABLED=true + secrets set → one-click bridge login | Run 9 |
+
+**Selling playbook:**
+- CRM-only customer: deploy with VITE_BIZZBILLS_ENABLED unset → clean CRM, koi BizzBills mention nahi
+- BizzBills-only customer: bizzbills repo alag deploy, apna login, apna pricing
+- Bundle customer: dono deploy + shared BRIDGE_SECRET + VITE flag true → "ek login" USP
+- Upsell path: CRM pehle becha → baad mein BizzBills add-on → env toggle + secret set → done (no redeploy of BizzBills needed, sirf CRM)
+
+**Fix applied:** AuthLayout BillInvoice conditional on VITE_BIZZBILLS_ENABLED (build-time, correct for single-brand deployment); per-customer toggle aayega white-label multi-tenant scale pe (whiteLabel table add column — future).
+
+### Verification: tsc 0, regression 1690/1690 PASS
+
+## Guardian Run 9 — 2026-09-07 (Option A: BizzBills Token Bridge IMPLEMENTED)
+
+### Architecture (apps remain independent deployables — user rule intact)
+```
+CRM sidebar "BillInvoice" click
+  → openExternal() detects invoice.bizzautoai.com
+  → GET /api/auth/bizzbills-bridge (CRM JWT auth)
+  → CRM signs { email, name, businessName, crmUserId, jti, exp:60s } with BIZZBILLS_BRIDGE_SECRET (HMAC)
+  → window.open(`BIZZBILLS_URL/auth/bridge?token=...`)
+  → BizzBills /auth/bridge page → POST /api/auth/bridge
+  → NextAuth crm-bridge CredentialsProvider: verifyBridgeToken (timing-safe HMAC + exp + jti single-use)
+  → find-or-create user+org+TenantUser (mirrors register flow)
+  → NextAuth session cookie → redirect /dashboard  ✅ ONE CLICK, LOGGED IN
+```
+
+| Side | File | Detail |
+|------|------|--------|
+| BizzBills | src/lib/bridge.ts | verifyBridgeToken (timing-safe, 60s TTL, jti replay-protect in-memory — swap DB/Redis if multi-instance), slugifyForOrg |
+| BizzBills | src/lib/auth.ts | crm-bridge CredentialsProvider (find-or-create user+org+TenantUser, mirrors register/route.ts; passwordHash stays null — bridge-only) |
+| BizzBills | src/app/api/auth/bridge/route.ts | rate-limited; internal NextAuth csrf+callback flow; forwards set-cookie; consumes token once |
+| BizzBills | src/app/auth/bridge/page.tsx | landing UI: spinner → success/error + manual login fallback |
+| CRM | src/server/routes/auth.ts | GET /api/auth/bizzbills-bridge (auth): signs HMAC token w/ BIZZBILLS_BRIDGE_SECRET, returns bridgeUrl (BIZZBILLS_URL env, default invoice.bizzautoai.com) |
+| CRM | src/layouts/AuthLayout.tsx | openExternal() helper — ALL 8 external-click paths now route BillInvoice via bridge, fallback plain URL on error |
+| Env | both | BIZZBILLS_BRIDGE_SECRET (CRM) == BRIDGE_SECRET (BizzBills) — 64-hex generated, rotated after accidental console echo. .env.example documented |
+
+**Security invariants:** token single-use (jti), 60s TTL, timing-safe compare, replay-protected, user email verified server-side by BOTH apps, fallback to manual login on any failure. Secret generated via crypto RNG, rotated once (console echo lesson logged).
+
+### Verification
+- CRM tsc: 0 | BizzBills tsc: 0 | Regression: 1690/1690 PASS
+- BizzBills has pre-existing uncommitted changes (schema/routes) — NOT touched by this task; commit separately by owner.
+
+### Deploy checklist
+1. CRM: set BIZZBILLS_BRIDGE_SECRET + BIZZBILLS_URL in Coolify env → deploy CRM
+2. BizzBills: set BRIDGE_SECRET (same value) in its hosting env → deploy BizzBills
+3. Test: CRM → BillInvoice → lands on BizzBills dashboard logged-in
+
+## Guardian Run 8 — 2026-09-07 (PhonePe Gateway + BizzBills Audit)
+
+### PhonePe — IMPLEMENTED (competitor-gap feature #1)
+| Component | File | Detail |
+|-----------|------|--------|
+| Gateway service | src/server/services/phonepe.service.ts | Standard Checkout v2 (/pg/v1): createPayment (base64 payload, X-VERIFY checksum), checkStatus (server-side confirm), verifyCallbackChecksum (timing-safe), decodeCallbackResponse, generateTransactionId. Lazy-init (no crash when keys missing, mirrors Razorpay pattern). UAT/PROD hosts |
+| Routes | src/server/routes/phonepe.ts | POST /api/phonepe/callback (public, X-VERIFY + double-check via status API — defence in depth), GET /api/phonepe/status/:orderId (auth, polls PhonePe directly, idempotent confirmOrderPaid), POST /api/phonepe/create (auth, direct initiate) |
+| Mount | src/server/index.ts | app.use('/api/phonepe', phonepeRoutes) |
+| Checkout | ecommerce.ts POST /checkout | paymentMethod='phonepe' branch → createPayment → order.gatewayData.merchantTransactionId → returns redirectUrl |
+| Verify path | phonepe.ts confirmOrderPaid | Same business rules as Razorpay path: paymentStatus=paid + status=processing + loyalty points + WhatsApp/email confirmation (idempotent — both callback AND status-poll safe) |
+| UI | CheckoutPage.tsx | 'phonepe' method added (default), purple option card, redirect flow |
+| UI | OrderTrackingPage.tsx | ?phonepe=return → polls /phonepe/status/:orderId up to 8 attempts (5s×attempt backoff), success toast on COMPLETED |
+| Docs | .env.example | PHONEPE_MERCHANT_ID/SALT_KEY/SALT_INDEX/ENV + callback whitelist note |
+
+**Security invariants:** client redirect never trusted (server re-checks via status API); callback checksum timing-safe; callback errors never leak internals; status endpoint business-scoped; idempotent payment confirmation.
+
+**Setup (production):** set PHONEPE_MERCHANT_ID + PHONEPE_SALT_KEY + PHONEPE_ENV in Coolify → whitelist `{BASE_URL}/api/phonepe/callback` in PhonePe dashboard. Without keys, feature is dormant (no crash).
+
+### BizzBills Audit — ISSUE CONFIRMED (no code merge, per user rule)
+| Finding | Detail |
+|---------|--------|
+| Only touchpoint | CRM sidebar → https://invoice.bizzautoai.com/dashboard (AuthLayout.tsx:123) |
+| **The issue** | BizzBills /dashboard → 307 → /auth/signin (NextAuth Credentials) — CRM user must LOG IN AGAIN. Zero SSO/bridge. Bundle UX friction = the "issue" user sensed |
+| CRM auth | JWT (Bearer) via /api/auth/login — different stack from BizzBills NextAuth |
+| Recommended fix (app-independent) | **Token bridge**: BizzBills adds a tiny NextAuth Credentials "BridgeProvider" that accepts a CRM-signed one-time token (HMAC with shared secret) → auto-login. Apps stay separate deployables; CRM sidebar link becomes `/auth/bridge?token=...` |
+| Alternative | Magic-link (CRM emails/whatsapps signed portal URL) — reuses BizzBills' existing PORTAL_SECRET HMAC pattern |
+| Bundle strategy (user's rule) | BizzBills stays standalone product; offer as ADD-ON bundle (CRM + BizzBills = ₹X/mo). Fix = 1-day bridge task when user approves |
+
+### Verification
+- tsc: 0 errors
+- Regression gate: 1690/1690 PASS (no delta)
+- Not deployed yet — next commit+push+Coolify trigger
+
+## Guardian Run 7 — 2026-09-07 (Commit + Push + Deploy)
+
+| Step | Result |
+|------|--------|
+| Secret scan (staged diff) | 0 hits |
+| Commit | `f04a26e` P0-P3 production hardening (62 files, +1434/−2209) + `1731f6c` junk-file cleanup |
+| Push origin/master | ✅ 0fa81e7..1731f6c |
+| Push prod/main | ✅ e704ef3..1731f6c |
+| Push fresh/main | ✅ e704ef3..1731f6c |
+| Production health | db ✅ n8n ✅ ai ✅ whatsapp: false (no channel configured — expected) |
+| **Deploy verification** | ⏳ **OLD BUNDLE STILL SERVED after ~10 min polling** — `assets/index-MM3J_rMy.js` unchanged; new code strings (noopener/Business Chat) absent |
+
+**BLOCKED (human action required):** Coolify auto-deploy did NOT trigger on prod/main push (either webhook not configured or auto-deploy toggle off). Action: open Coolify dashboard (http://87.76.169.6:8000) → bizzauto project → **Deploy** button. Then verify: browser hard-refresh (Ctrl+Shift+R) → BillInvoice search opens new tab + heading shows "<Business> — Business Chat".
+
+**Note:** deploy.yml (GHA) triggers on `main` of origin repo, but origin only has `master` — GHA deploy path was never live. Real deploy path is Coolify watching prod repo (manual/auto toggle unknown).
+
 ## Guardian Run 6 — 2026-09-06 (P3: Cosmetic + Encoding Repair + Ops Hygiene)
 
 | BUG-ID | Severity | Title | Fix | Verified |

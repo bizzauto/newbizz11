@@ -1583,6 +1583,68 @@ router.get('/verification-status', authenticate, async (req: AuthRequest, res: R
   }
 });
 
+// ==================== BIZZBILLS BRIDGE (Option A token bridge) ====================
+/**
+ * GET /api/auth/bizzbills-bridge
+ *
+ * Authenticated CRM user → one-time signed token → BizzBills /auth/bridge?token=...
+ * BizzBills verifies the HMAC (shared BRIDGE_SECRET), find-or-creates the user
+ * + org, and sets a normal NextAuth session. One-click login, apps remain
+ * fully independent deployables.
+ *
+ * Token is single-use (BizzBills enforces jti replay protection), 60s TTL.
+ */
+router.get('/bizzbills-bridge', authenticate, async (req: AuthRequest, res: Response) => {
+  try {
+    const BIZZBILLS_URL = process.env.BIZZBILLS_URL || 'https://invoice.bizzautoai.com';
+    const BRIDGE_SECRET = process.env.BIZZBILLS_BRIDGE_SECRET;
+
+    if (!BRIDGE_SECRET) {
+      return res.status(503).json({
+        success: false,
+        error: 'BizzBills bridge not configured. Set BIZZBILLS_BRIDGE_SECRET in environment.',
+      });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id },
+      include: { business: { select: { name: true } } },
+    });
+    if (!user?.email) {
+      return res.status(400).json({ success: false, error: 'User email required for bridge' });
+    }
+
+    const cryptoAsync = await import('crypto');
+    const payload = {
+      email: user.email,
+      name: user.name || undefined,
+      businessName: user.business?.name || undefined,
+      crmUserId: user.id,
+      jti: cryptoAsync.randomUUID(),
+      iat: Math.floor(Date.now() / 1000),
+      exp: Math.floor(Date.now() / 1000) + 60,
+    };
+
+    const encoded = Buffer.from(JSON.stringify(payload)).toString('base64url');
+    const sig = cryptoAsync
+      .createHmac('sha256', BRIDGE_SECRET)
+      .update(encoded)
+      .digest('base64url');
+
+    const token = `${encoded}.${sig}`;
+    res.json({
+      success: true,
+      data: {
+        bridgeUrl: `${BIZZBILLS_URL}/auth/bridge?token=${encodeURIComponent(token)}`,
+        expiresIn: 60,
+      },
+    });
+  } catch (error: any) {
+    console.error('BizzBills bridge error:', error?.message);
+    res.status(500).json({ success: false, error: 'Bridge token generation failed' });
+  }
+});
+
 // DIAGNOSTIC ENDPOINT - test JWT sign/verify in the same process
 router.get('/jwt-test', async (req: Request, res: Response) => {
   const secret = getJwtSecret();

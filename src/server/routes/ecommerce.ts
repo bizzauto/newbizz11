@@ -754,6 +754,7 @@ router.post('/checkout', async (req: AuthRequest, res: Response) => {
 
     // Create Razorpay order if online payment
     let razorpayOrder = null;
+    let phonepePayment = null;
     if (paymentMethod === 'razorpay' && process.env.RAZORPAY_KEY_ID) {
       try {
         const razorpay = (await import('razorpay')).default;
@@ -782,11 +783,37 @@ router.post('/checkout', async (req: AuthRequest, res: Response) => {
       }
     }
 
+    // PhonePe Standard Checkout — returns a redirect URL the frontend opens
+    if (paymentMethod === 'phonepe') {
+      try {
+        const phonepe = await import('../services/phonepe.service.js');
+        const FRONTEND = process.env.FRONTEND_URL || 'https://bizzautoai.com';
+        phonepePayment = await phonepe.createPayment({
+          amountInRupees: total,
+          merchantTransactionId: phonepe.generateTransactionId('MT'),
+          redirectUrl: `${FRONTEND}/order-tracking/${order.orderNumber}?phonepe=return`,
+          callbackUrl: `${process.env.BASE_URL || FRONTEND}/api/phonepe/callback`,
+          userId: contact.id,
+          mobileNumber: (req.user as any)?.phone || undefined,
+          notes: { orderId: order.id, businessId },
+        });
+        await prisma.order.update({
+          where: { id: order.id },
+          data: { gatewayData: { merchantTransactionId: phonepePayment.merchantTransactionId } as any },
+        });
+      } catch (err: any) {
+        console.error('PhonePe payment creation failed:', err.message);
+      }
+    }
+
     res.status(201).json({
       success: true,
       data: {
         ...order,
         razorpayOrder: razorpayOrder ? { ...razorpayOrder as any, key_id: process.env.RAZORPAY_KEY_ID } : null,
+        phonepePayment: phonepePayment
+          ? { merchantTransactionId: phonepePayment.merchantTransactionId, redirectUrl: phonepePayment.redirectUrl }
+          : null,
         discount,
       },
     });
