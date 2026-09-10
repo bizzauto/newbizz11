@@ -8,6 +8,7 @@ const ROUTE_MAP: Record<string, string> = {
   social: '/social', analytics: '/analytics', settings: '/settings', pricing: '/pricing',
   contact: '/contact', about: '/about', terms: '/terms', privacy: '/privacy',
   'api-keys': '/api-keys', landing: '/',
+  bizzbills: process.env.VITE_BIZZBILLS_URL || 'https://invoice.bizzautoai.com/dashboard',
 };
 
 const Footer: React.FC = () => {
@@ -15,7 +16,13 @@ const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
   const nav = (page: string) => (e: React.MouseEvent) => {
     e.preventDefault();
-    navigate(ROUTE_MAP[page] || '/');
+    const target = ROUTE_MAP[page] || '/';
+    // External links (BizzBills etc.) open in a new tab
+    if (target.startsWith('http')) {
+      window.open(target, '_blank', 'noopener,noreferrer');
+    } else {
+      navigate(target);
+    }
   };
 
   return (
@@ -74,6 +81,7 @@ const Footer: React.FC = () => {
                 { label: 'Campaigns', page: 'social' },
                 { label: 'Analytics', page: 'analytics' },
                 { label: 'Integrations', page: 'settings' },
+                { label: 'BizzBills (Invoicing)', page: 'bizzbills' },
                 { label: 'Pricing', page: 'pricing' },
               ].map(link => (
                 <li key={link.label}>
